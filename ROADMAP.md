@@ -261,9 +261,17 @@ measured VIO drift number ✅ (19.0 m ATE — a real measurement, and a failing 
    was switched off. Found against a *perfect* pose in an afternoon; against a drifting
    estimator in October it would have been a week and blamed on the estimator.
 
-   **Next:** sweep `drift_mps` / `yaw_drift_dps` / `latency_ms` until the gate fails.
-   The last passing value is a **specification for Gate A** — the drift budget any real
-   estimator must beat. Detail: `CLOSED_LOOP.md` §8.
+   **The budget is measured.** Sweeping injected drift until the gate fails: 0.02 m/s
+   passes, 0.05 m/s does not. More useful than the number itself is *why* — **EKF2 does
+   not attenuate the drift at all**, because with GNSS off external vision is the only
+   aiding source and there is nothing to test it against. Observed error equals injected
+   error, one for one.
+
+   So **the spec for Gate A is accumulated position error (~1.5 m), not a drift rate** —
+   a longer mission fails at a proportionally lower rate. Measured ICP is ATE 19.0 m over
+   58.6 m, which misses that bar by more than an order of magnitude. Detail:
+   `CLOSED_LOOP.md` §8. Yaw sweep still to finish, and it is the one that decides whether
+   the gap is tuning or structural.
 6. ✅🟡 **Day 6 — timeboxed, and the timebox is now spent.** The `ratio=0` cause is
    found and fixed (one failed registration cleared the velocity model, and
    `Odom/ResetCountdown` defaults to *never reset* — so a single bad frame wedged
