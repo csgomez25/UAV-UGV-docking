@@ -65,7 +65,7 @@ Your goal isn't "do the project," it's **broaden from CV into an autonomy/locali
 
 ---
 
-## Phase 1 — Full autonomy stack in simulation  (Months 1–2) — 🔄 **perception→flight ✅ · pose ❌**
+## Phase 1 — Full autonomy stack in simulation  (Months 1–2) — 🔄 **perception→flight ✅ · GNSS-off flight ✅ · estimator ❌**
 **Build:** Day-7 loop fully fleshed out — cuVSLAM drift study, nvblox map, A* planner, offboard manager. Obstacle avoidance working in sim. (This is the §6 gate before buying hardware.)
 
 > **Status 2026-08-01:** ✅ **A\* planner** (`astar.py`, validated headlessly and on real
@@ -86,11 +86,15 @@ Your goal isn't "do the project," it's **broaden from CV into an autonomy/locali
 > `GPS_DENIED_PLAN.md` §3, `VIO.md`.
 >
 > **So Phase 1 is not ~70% along one axis — it is three separate gates.** Estimate
-> (❌ stuck), closed-loop flight on a non-GPS pose (⬜ **never attempted**), and
-> survives-drift (⬜ unreachable yet). The middle one is an *integration* problem, not
-> a research problem, and it is what actually earns the phrase "GPS-denied flight."
-> It is currently blocked behind the first one for no good reason — see item 5 in
-> **Start RIGHT NOW**.
+> (❌ still stuck), closed-loop flight on a non-GPS pose (✅ **flown 2026-08-01**), and
+> survives-drift (⬜ not started, but now reachable). The middle one was an
+> *integration* problem, not a research problem, and it is what earns the phrase
+> "GPS-denied flight" — it had been blocked behind the first for no good reason, and
+> took one session once attempted directly. See item 5 in **Start RIGHT NOW**.
+>
+> ✅ **The aircraft now flies with `EKF2_GPS_CTRL=0`**, on a pose PX4 did not compute.
+> The pose is **simulator truth, not an estimator** — say that in the same breath, every
+> time. It is not GPS-denied navigation; it is the harness a real estimator drops into.
 >
 > **Scope change (BUILD.md §0.6):** the sim map is now **octomap**, not nvblox, and the
 > VIO front-end is **rtabmap `icp_odometry`**, not cuVSLAM. Isaac ROS remains the Jetson flight stack. This makes
@@ -134,12 +138,12 @@ Your goal isn't "do the project," it's **broaden from CV into an autonomy/locali
 *explain* how the estimator computes pose and how A\* found the path, and you have a
 measured VIO drift number ✅ (19.0 m ATE — a real measurement, and a failing one).
 
-> **Sharpen the exit criterion.** "A measured drift number" is satisfied by a bad
-> number, which is how Phase 1 read as ~70% while the aircraft had still never flown
-> without GPS. Replace it with: **the aircraft completes the `PHASE1_GATE.md` mission
-> with `EKF2_GPS_CTRL=0`,** on a pose PX4 did not compute. State in the same breath
-> what supplies that pose — simulator truth is a legitimate milestone as long as you
-> say it is simulator truth.
+> **Sharpened exit criterion — and it is now half met.** "A measured drift number" is
+> satisfied by a bad number, which is how Phase 1 read as ~70% while the aircraft had
+> still never flown without GPS. The replacement: **the aircraft flies with
+> `EKF2_GPS_CTRL=0`, on a pose PX4 did not compute.** ✅ Done 2026-08-01 — on the square,
+> on simulator truth, and it says so out loud. What remains for Phase 1 is the same
+> flight on a pose from a real *estimator*, which is Gate A and still open.
 
 ---
 
@@ -242,17 +246,24 @@ measured VIO drift number ✅ (19.0 m ATE — a real measurement, and a failing 
    was designed to be; everything else in `PHASE1_GATE.md` exists because a *perceived*
    map is not a synthetic one (unbounded extent, unknown space, a goal that may not be
    in the map yet).
-5. ⭐ **Fly on a pose PX4 did not compute.** The single highest-leverage sim item left,
-   and the one nothing else is blocked on. Feed `/fmu/in/vehicle_visual_odometry` from
-   Gazebo ground truth, set `EKF2_EV_CTRL=15` / `EKF2_GPS_CTRL=0`, and fly the
-   `PHASE1_GATE.md` mission. **Decouples the two unknowns:** if it flies, the whole
-   closed-loop path is proven and any future estimator drops into a harness that already
-   exists; if it doesn't, the frame/timestamp/delay bugs surface now, against a perfect
-   signal, instead of tangled up with a bad estimator in October. Build order, verified
-   parameters and the four sub-tasks: `GPS_DENIED_PLAN.md` §5. This is Phase-3 work
-   pulled into sim, where it costs days instead of flight tests.
-   > Feed it **simulator truth**, never EKF2's own output — that is a positive feedback
-   > loop, not a test.
+5. ✅ **Fly on a pose PX4 did not compute — DONE 2026-08-01.** Armed, flew a 5 m square
+   to 3.16 m and landed with **`EKF2_GPS_CTRL=0`**, on a pose fed to
+   `/fmu/in/vehicle_visual_odometry` from Gazebo ground truth. EKF2 tracked truth to
+   mean 0.073 m / max 0.199 m. Phase-3 work pulled into sim, and it cost one session
+   instead of flight tests — exactly the argument for doing it early.
+
+   **It paid off the way decoupling is supposed to.** The flight failed on the first
+   attempt, and the cause was a bug that had been corrupting *every integer PX4
+   parameter this project sets* since the script was written: MAVLink carries params in
+   a float32 field and PX4 reads integers out of it bytewise, so `EKF2_EV_CTRL=15` was
+   stored as 1097859072. The read-back verified nothing because it round-trips the same
+   corruption. It had never mattered while GNSS was on, and became fatal the instant it
+   was switched off. Found against a *perfect* pose in an afternoon; against a drifting
+   estimator in October it would have been a week and blamed on the estimator.
+
+   **Next:** sweep `drift_mps` / `yaw_drift_dps` / `latency_ms` until the gate fails.
+   The last passing value is a **specification for Gate A** — the drift budget any real
+   estimator must beat. Detail: `CLOSED_LOOP.md` §8.
 6. ✅🟡 **Day 6 — timeboxed, and the timebox is now spent.** The `ratio=0` cause is
    found and fixed (one failed registration cleared the velocity model, and
    `Odom/ResetCountdown` defaults to *never reset* — so a single bad frame wedged
