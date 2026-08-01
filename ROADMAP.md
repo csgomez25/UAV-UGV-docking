@@ -4,6 +4,12 @@
 >
 > Companion docs: [README.md](./README.md) (plan going forward) · [BUILD.md](./BUILD.md) (decisions/BOM) · [SIM_WEEK1.md](./SIM_WEEK1.md) (week-1 commands) · [ROLES.md](./ROLES.md) (team) · [SUMMER.md](./SUMMER.md) (pre-work).
 >
+> **Technical companion:** the code repo's
+> [`GPS_DENIED_PLAN.md`](https://github.com/csgomez25/gps-denied-drone-stack/blob/main/GPS_DENIED_PLAN.md)
+> — every estimator attempt and what it measured, the **three** gates this document
+> treats as one, and the next build with file and parameter names attached. **This
+> document wins on priority and schedule; that one wins on mechanism.**
+>
 > Legend: ⭐ = do this one, it's the highest-leverage resource for the step. 📚 = deeper dive when you have time.
 
 ---
@@ -59,17 +65,32 @@ Your goal isn't "do the project," it's **broaden from CV into an autonomy/locali
 
 ---
 
-## Phase 1 — Full autonomy stack in simulation  (Months 1–2) — 🔄 **~70%**
+## Phase 1 — Full autonomy stack in simulation  (Months 1–2) — 🔄 **perception→flight ✅ · pose ❌**
 **Build:** Day-7 loop fully fleshed out — cuVSLAM drift study, nvblox map, A* planner, offboard manager. Obstacle avoidance working in sim. (This is the §6 gate before buying hardware.)
 
-> **Status 2026-07-30:** ✅ **A\* planner** (`astar.py`, validated headlessly and on real
+> **Status 2026-08-01:** ✅ **A\* planner** (`astar.py`, validated headlessly and on real
 > nuScenes HD-map rasters) and ✅ **offboard manager** are done and flew the closed loop
 > autonomously in SITL on 2026-07-13. ✅ **Depth into ROS 2** and ✅ **the occupancy
 > map** both closed 2026-07-30 — octomap maps three spawned obstacles to their true
-> positions with open ground free. ⬜ **The drift study** is not started. The loop
-> still *plans* on a synthetic grid, so "obstacle avoidance in sim" is proven for
-> *planning→flight*; the remaining rewire (point `planner_node` at `/projected_map`)
-> is what makes it *perception→flight*.
+> positions with open ground free. ✅ **The loop now plans on the perceived map**
+> (2026-07-31, `PHASE1_GATE.md`): two autonomous legs, both planned entirely on a map
+> the aircraft built from its own depth camera in flight, arriving to 3 cm and 12 cm
+> with a 0.55 m minimum obstacle clearance. That is *perception→planning→flight*.
+>
+> 🔴 **The drift study ran and returned a negative result.** rtabmap `icp_odometry`
+> registers 80–94% of frames after the `Odom/ResetCountdown` fix, but the *trajectory*
+> is unusable: ATE 19.0 m over a 58.6 m path. The cause is geometric, not a tuning
+> miss — a camera tilted 20° down at 2 m AGL sees mostly ground, and a ground plane
+> leaves **x, y and yaw unobservable**. Four candidate fixes were measured and all
+> made it worse or silently fake. Full record and the four-row negative-result table:
+> `GPS_DENIED_PLAN.md` §3, `VIO.md`.
+>
+> **So Phase 1 is not ~70% along one axis — it is three separate gates.** Estimate
+> (❌ stuck), closed-loop flight on a non-GPS pose (⬜ **never attempted**), and
+> survives-drift (⬜ unreachable yet). The middle one is an *integration* problem, not
+> a research problem, and it is what actually earns the phrase "GPS-denied flight."
+> It is currently blocked behind the first one for no good reason — see item 5 in
+> **Start RIGHT NOW**.
 >
 > **Scope change (BUILD.md §0.6):** the sim map is now **octomap**, not nvblox, and the
 > VIO front-end is **rtabmap `icp_odometry`**, not cuVSLAM. Isaac ROS remains the Jetson flight stack. This makes
@@ -109,7 +130,16 @@ Your goal isn't "do the project," it's **broaden from CV into an autonomy/locali
 - ⭐ 3Blue1Brown "Essence of Linear Algebra" (YouTube) — rotations, vectors, eigenstuff intuition.
 - Probability basics (any intro) — you need Gaussians, covariance, Bayes' rule for the filters.
 
-**Phase-1 done when:** sim drone autonomously avoids an inserted obstacle, you can *explain* how cuVSLAM estimates pose and how A* found the path, and you have a measured VIO drift number.
+**Phase-1 done when:** sim drone autonomously avoids an inserted obstacle ✅, you can
+*explain* how the estimator computes pose and how A\* found the path, and you have a
+measured VIO drift number ✅ (19.0 m ATE — a real measurement, and a failing one).
+
+> **Sharpen the exit criterion.** "A measured drift number" is satisfied by a bad
+> number, which is how Phase 1 read as ~70% while the aircraft had still never flown
+> without GPS. Replace it with: **the aircraft completes the `PHASE1_GATE.md` mission
+> with `EKF2_GPS_CTRL=0`,** on a pose PX4 did not compute. State in the same breath
+> what supplies that pose — simulator truth is a legitimate milestone as long as you
+> say it is simulator truth.
 
 ---
 
@@ -208,24 +238,42 @@ Your goal isn't "do the project," it's **broaden from CV into an autonomy/locali
 3. **Practice Kalibr on a dataset.** Camera–IMU calibration is precisely what sim
    cannot teach — the sim extrinsic is exact and free, the hardware one is vibration,
    thermal drift and a fiddly toolchain. EuRoC ships calibration data.
-4. ⬜ **Close the Phase-1 gate**: swap `fake_world` for `/projected_map`. A rewire, not
-   new code — `planner_node` already consumes `nav_msgs/OccupancyGrid`, and its
-   unknown-space policy is now measured on two real maps.
-5. ⬜ **Research track**: the 2-DOF along-track + heading matcher; then RPE and a paired
+4. ✅ **Close the Phase-1 gate** — done 2026-07-31. The swap was the one-line remap it
+   was designed to be; everything else in `PHASE1_GATE.md` exists because a *perceived*
+   map is not a synthetic one (unbounded extent, unknown space, a goal that may not be
+   in the map yet).
+5. ⭐ **Fly on a pose PX4 did not compute.** The single highest-leverage sim item left,
+   and the one nothing else is blocked on. Feed `/fmu/in/vehicle_visual_odometry` from
+   Gazebo ground truth, set `EKF2_EV_CTRL=15` / `EKF2_GPS_CTRL=0`, and fly the
+   `PHASE1_GATE.md` mission. **Decouples the two unknowns:** if it flies, the whole
+   closed-loop path is proven and any future estimator drops into a harness that already
+   exists; if it doesn't, the frame/timestamp/delay bugs surface now, against a perfect
+   signal, instead of tangled up with a bad estimator in October. Build order, verified
+   parameters and the four sub-tasks: `GPS_DENIED_PLAN.md` §5. This is Phase-3 work
+   pulled into sim, where it costs days instead of flight tests.
+   > Feed it **simulator truth**, never EKF2's own output — that is a positive feedback
+   > loop, not a test.
+6. ✅🟡 **Day 6 — timeboxed, and the timebox is now spent.** The `ratio=0` cause is
+   found and fixed (one failed registration cleared the velocity model, and
+   `Odom/ResetCountdown` defaults to *never reset* — so a single bad frame wedged
+   odometry permanently; `--Odom/ResetCountdown 1` took registration from 4.3% to
+   80.3%). The Gazebo `PosePublisher` ground truth is **not** done and has moved to
+   item 5, where it pays twice. **Per this item's own instruction, ICP parameter work
+   stops here** — the remaining failure is an unobservable DOF, and a DOF that is
+   geometrically unobservable cannot be recovered by tuning. rtabmap does not ship;
+   cuVSLAM does.
+7. ⬜ **Research track**: the 2-DOF along-track + heading matcher; then RPE and a paired
    significance test.
-6. 🟡 **Day 6 — timebox it.** `icp_odometry` runs, but the reference is EKF2's own
-   estimate and ICP registers nothing (`VIO.md` §3b). Worth one session to get real
-   ground truth from a Gazebo `PosePublisher` and one attempt at the `ratio=0` cause —
-   then move on regardless. rtabmap does not ship; cuVSLAM does.
-7. ⬜ Audit-enroll in the **UPenn Aerial Robotics** Coursera course.
+8. ⬜ Audit-enroll in the **UPenn Aerial Robotics** Coursera course.
 
 *(Deferred to the fall with the budget: verifying Orin Nano vs. the old Nano, and
 ordering the D435i and the X500 kit.)*
 
-*(Done: all code under git and pushed; SIM_WEEK1 Days 1–5; the octomap and rtabmap
-scope decisions recorded in BUILD.md §0.6; the Day-4 TF conflict, the Gazebo RAM leak,
-the octomap ground filter, and the planner's unknown-space policy — all found, fixed
-and measured.)*
+*(Done: all code under git and pushed; SIM_WEEK1 Days 1–5; the Phase-1 gate flown on the
+perceived map; the octomap and rtabmap scope decisions recorded in BUILD.md §0.6; the
+Day-4 TF conflict, the Gazebo RAM leak, the octomap ground filter, the planner's
+unknown-space policy, the `icp_odometry` reset latch, and the false-groundtruth
+measurement error — all found, fixed and measured.)*
 
 > Buying is deferred to the fall by budget, not by the gate. When funds unlock,
 > verify the §0.5 ⚠️ items first, then order the long-lead D435i.
