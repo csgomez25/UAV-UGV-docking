@@ -35,6 +35,13 @@ Keep the dream in the intro; keep the graded thing measurable.
 > and if it comes back "Humble only" it invalidates a lot of Jazzy-specific work. Do it
 > now, folded into the Isaac ROS container de-risk in SUMMER.md. Item 1 (confirming the
 > board is an *Orin* Nano) can wait for the order.
+>
+> **Still true 2026-08-13, and item 2 is still not done.** Six more weeks of Gate A work
+> have gone by — two estimator candidates opened and closed, a third built — and Docker
+> and the NVIDIA Container Toolkit remain uninstalled, so the support matrix remains
+> unchecked. §0.6 predicted exactly this ("unverified for longer, because sim no longer
+> forces the question"). **It is a documentation check plus a container pull, and it is
+> now the oldest unpaid risk in this document.**
 
 ### ⚠️ Two things to verify BEFORE buying
 1. **Confirm the Jetson is an *Orin* Nano.** The original 2019 Jetson Nano maxes at Ubuntu 20.04, is EOL, has no Isaac ROS support, and is too weak for VIO + mapping. Dead end.
@@ -95,6 +102,25 @@ feature-based front-end has an image to work with — `icp_odometry` on the dept
 does not need one. Second, rtabmap is a *SLAM* system, so it must run with **loop
 closure off**: loop closure corrects exactly the drift Day 6 exists to measure.
 
+> **The first constraint was removed 2026-08-02.** It stopped being acceptable the moment
+> Gate A needed a *visual* front end — depth-only ICP cannot observe yaw, so every
+> remaining candidate is visual or visual-inertial. **RGB is back in the overlay at
+> 640×480** (not upstream's 1920×1080), and the interesting part is that the leak **does
+> not occur at all** there: `gz sim` RSS was bit-identical at 535.4 MB across 13 samples
+> over 180 s, where the bandwidth model predicted ~27.6 MB/s — about 18.8 GB of growth in
+> that window. **So the mechanism was never simply bandwidth, and it is still
+> unexplained.** Practical rule: **640×480 is measured safe; anything above it must be
+> re-measured, not interpolated** — the one model anyone had for this behaviour has
+> already been wrong once, fortunately in the safe direction.
+>
+> Both sensors are now also set to the **same 1.274 rad FOV**. They are co-located to the
+> millimetre and identically tilted, so the stereo baseline is exactly zero and depth is
+> registered to RGB purely by matching focal length; upstream's 1.204 rad RGB would be an
+> ~8% scale error growing toward the frame edge, which **reads as depth noise rather than
+> as a calibration bug.** Gated by `sim/check_camera_tilt.py`. RGB was matched to depth
+> and not the reverse, deliberately: the depth sensor feeds octomap and every Gate B
+> number already measured, and none of those get re-measured for a new front end.
+
 **Timebox it (2026-07-31).** Day 6 produced a running pipeline and two honest blockers
 (`VIO.md` §3b): the "ground truth" is EKF2's own estimate, and ICP registers nothing.
 Worth one more session — real ground truth from a Gazebo `PosePublisher`, one attempt
@@ -103,6 +129,36 @@ ship; cuVSLAM does. Days spent tuning ICP buy nothing that transfers, and the si
 cannot test the part that actually matters (camera–IMU calibration). With hardware
 budget-locked until the fall, that time is far better spent de-risking Isaac ROS itself
 and climbing the VIO ladder — see SUMMER.md "Revised priorities".
+
+> **The timebox was honoured on ICP and then spent twice over on its successors
+> (2026-08-13).** Both blockers closed: ground truth needed **no `PosePublisher`** (two
+> entries in `dds_topics.yaml` — PX4 had been computing it all along and simply never
+> exported it), and `ratio=0` was a **latch**, not an inability to register. ICP
+> parameter work stopped there, correctly, because the residual failure is an
+> unobservable DOF.
+>
+> What was *not* anticipated is that the next two rungs would also close:
+>
+> | candidate | verdict |
+> |---|---|
+> | `icp_odometry` (depth) | **closed, geometric** — yaw unobservable over mostly-ground; ATE/path 32.4% |
+> | `rgbd_odometry` (RGB+depth) | **closed 2026-08-03, both configs** — ATE 0.033 m for 14 s then a permanent latch, or 11–35% of path with the latch broken |
+> | OpenVINS (visual-inertial) | **built 2026-08-08, no pose on the aircraft** — stuck in initialisation. Verified working on **EuRoC MH_01 (ATE 0.221 m) 2026-09-01**, so the fault is Gazebo-side, not the build |
+>
+> **This validates the point §0.6 was making, in the direction that costs something.**
+> Three apt-installable-or-source front-ends have now been tried and the one that
+> actually ships on the Jetson has still not been touched, because Docker and the NVIDIA
+> Container Toolkit are still not installed. The prediction "sim no longer forces the
+> question" has held for six weeks. **The support-matrix check is still the highest
+> unpaid risk in this document.**
+>
+> ⚠️ **One correction worth carrying, because it is the same mistake in a new place.**
+> The claim "OpenVINS is already compiled into this rtabmap build" was carried in the
+> pick-up notes for a week, with evidence attached: `rtabmap --params | grep
+> OdomOpenVINS` lists ~50 parameters. It is false — `rtabmap --version` reports **`With
+> OpenVINS: false`**, along with VINS-Fusion, MSCKF_VIO, OKVIS, ORB_SLAM, Viso2, FOVIS
+> and DVO. rtabmap declares its full parameter surface regardless of build flags.
+> **A configuration surface is not a capability.** Getting OpenVINS meant a source build.
 
 Same caveat as octomap-vs-nvblox, and it should be stated the same way in the report:
 this validates the **pipeline**, not cuVSLAM. It also validates less than it appears

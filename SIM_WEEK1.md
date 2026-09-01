@@ -8,7 +8,12 @@
 
 ---
 
-## Progress (as of 2026-07-30) — **~75% through the gate**
+## Progress (as of 2026-08-13) — Days 1–5 and 7 done; **Day 6 is the whole remaining project**
+
+> **Read the gate as three, not one.** "Days done / 7" hides the fact that Day 6 is a
+> research problem and the rest were integration problems. Current split: Estimate ❌ ~30%
+> · Closed-loop-flight-without-GPS ✅ 100% · Survives-drift ⬜ ~5%. See
+> [README.md](./README.md#the-three-gates--read-this-before-any-percentage).
 
 | Day | Milestone | Status | Evidence / blocker |
 |---|---|---|---|
@@ -18,8 +23,10 @@
 | 3 | Offboard waypoint from ROS 2 | ✅ | `~/ws_px4` builds `px4_msgs` + `px4_ros_com` + `gps_denied_autonomy` |
 | 4 | Depth camera into ROS 2 | ✅ **2026-07-30** | 4 topics at rate, in flight, real TF — `DEPTH_SIM.md` §2, `results/depth_bridge.png` |
 | 5 | Occupancy map from depth | ✅ **2026-07-30** | `octomap_server` on `/depth_camera/points`; 3/3 obstacles mapped at 21–37× map density, open ground **and** the area behind the aircraft 0.0% occupied — `MAPPING.md`, `results/octomap_day5.png`, `results/octomap_3view.png` |
-| 6 | VIO + drift number | 🟡 **pipeline done, number invalid** | `icp_odometry` runs at 28 Hz off the depth cloud, scored against PX4 — but the aircraft left the commanded square at **16.4 m/s** and the estimator tracked only 47% of the distance, so the drift figure is not a benchmark. `VIO.md` §3 |
+| 6 | VIO + drift number | ❌ **three candidates measured, none viable** | Registration fixed and real ground truth now exists — but `icp_odometry` is closed on geometry (32.4%), `rgbd_odometry` closed both ways (0.033 m for 14 s then a latch, or 11–35% of path), and OpenVINS produces no pose. `VIO.md`, `results/gate_a/`, `ISSUES.md` §I2 |
 | 7 | Close the loop | ✅ **2026-07-31** | two autonomous legs planned on the **perceived** map (`/projected_map`), arriving 0.03 m / 0.12 m from goal; leg 2 flew 35.2 m for a 16.3 m straight line, routing around a wall the aircraft had mapped itself. Pose is still PX4's own sim state. `PHASE1_GATE.md` |
+| — | **Fly with GNSS fusion off** | ✅ **2026-08-01** | not a SIM_WEEK1 day — Phase-3 work pulled forward. Armed, flew a 5 m square to 3.16 m and landed with `EKF2_GPS_CTRL=0`, on a pose PX4 did not compute. Est vs truth **max 0.199 m**, 1160/1160 armed samples valid. **The pose is simulator truth, not an estimator.** `CLOSED_LOOP.md` |
+| — | **Error budget** | ✅ **2026-08-02** | 20 runs, four knobs. yaw **0.5 °/s** (hard wall) · position **~1.5 m accumulated** · latency 200 ms · noise no ceiling below 0.6 m. `CLOSED_LOOP.md` §8 |
 
 **What's actually done:** Days 1–5 fully, and Day 7's *own code* — `planner_node`,
 `offboard_manager`, `astar`, `fake_world` all built, and the closed loop flew
@@ -56,6 +63,29 @@ every cloud), are in `MAPPING.md`.
 > Also ruled out with evidence: NED/FRD frame mixing (all NED), timebase artifacts,
 > a starved cloud (197 955 points at 27.5 Hz), and bad normals. Full write-up:
 > `VIO.md` §3b.
+>
+> **Both blockers are now closed (2026-08-01/03), and the second one only half the way
+> it reads above.** Ground truth arrives over DDS via a two-line `dds_topics.yaml` patch
+> — **no `PosePublisher` overlay was needed.** The premise "PX4 exports no groundtruth"
+> was right; the inference "so the data does not exist" was wrong. `GZBridge` has been
+> filling four uORB groundtruth topics in NED the whole time; stock PX4 just never
+> published them. And `ratio = 0.000000` was a **latch**, not an inability to register:
+> one failed frame clears the velocity model, the next guess is null, `RegistrationIcp`
+> refuses a null guess, which clears the velocity again — and `Odom/ResetCountdown`
+> defaults to *never reset*, so nothing breaks the cycle. **One bad frame wedged odometry
+> permanently.** `=1` took registration 4.3% → 80.3%, null-guess failures 622 → 0.
+>
+> ⚠️ **A harder lesson landed on top of it (2026-08-02/03): the instrument was wrong
+> six different ways.** Every one had the same shape — *it reported a good number for a
+> bad run.* It PASSed a flight that never armed; its yaw fit ran entirely on pre-takeoff
+> samples so `atan2(0,0)` returned `+0.0°` on every run ever taken; it then applied that
+> offset **backwards**; it fitted over the whole flight and rotated two real runs ~180°
+> to flatter them; its headline used final drift, which a returning square drives to
+> zero; and `lost/null: 0` was never true, because rtabmap signals a dropout with an
+> **all-zero pose, not a NaN**, and `isfinite()` scored every one as "the aircraft is at
+> the origin." **No Gate A number from before 2026-08-03 is comparable with one after.**
+> The fix that matters is `check_vio_score.py` — ten synthetic flights with answers known
+> by construction, ~0.1 s, no ROS and no aircraft. `ISSUES.md` §E.
 
 **The swap is done (2026-07-31) — what's left is Day 6.** `planner_node` now consumes
 `/projected_map`, and the mission flew: two autonomous legs on the perceived map, 0.03 m
@@ -72,6 +102,14 @@ and 0.12 m arrival error, with a genuine detour around a mapped wall. Write-up:
 So the only incomplete day is **Day 6**, and with it the thing that makes this a
 GPS-denied stack rather than a mapping demo: every flight above runs on PX4's own
 perfect sim pose.
+
+> **Updated 2026-08-13 — and the framing above needs one correction.** "Every flight
+> above runs on PX4's own perfect sim pose" is no longer true of *all* of them. On
+> 2026-08-01 the aircraft flew a full square with **`EKF2_GPS_CTRL=0`**, on a pose fed in
+> from outside the autopilot — so the closed-loop half of GPS-denied flight is done and
+> measured. What that pose is, is **simulator truth, not an estimator**, and saying so in
+> the same breath is what keeps the claim honest. Day 6 remains the open half: three
+> candidates measured, none good enough to fly on.
 
 > **✅ Day-5 defect found and fixed the same day.** The first working map had ~18% of
 > the cells *behind* the aircraft occupied, where nothing exists. Plotting the occupied
@@ -364,11 +402,39 @@ Configure nvblox to also publish a **2D ESDF/distance-map slice at flight altitu
 > (see Day 4). Usable here because the camera joint is fixed and the extrinsic exact.
 > On hardware that calibration is real work; sim passing does not retire it.
 
-Launch **Isaac ROS cuVSLAM** on the sim stereo/depth + IMU; confirm it publishes an odometry estimate (`/visual_slam/tracking/odometry` or via TF). Compare its track against PX4 sim ground-truth pose over a 30–60 s flight and write down a first **drift number** (e.g. cm of position error after a loop). This is your baseline before the sensor ever flies.
+Launch the candidate estimator on the sim RGB/depth + IMU; confirm it publishes an odometry estimate on `/odom`. Compare its track against PX4 sim ground-truth pose over a 30–60 s flight and write down a first **drift number**. This is your baseline before the sensor ever flies.
 
-> Wiring note: cuVSLAM's odometry is what feeds PX4 EKF2 on hardware (via `VehicleVisualOdometry`/`VISION_POSITION_ESTIMATE`). In **sim**, PX4 already has perfect state, so don't fight it — let SITL use its own state for flight control, and run cuVSLAM **in parallel** purely to validate the VIO pipeline and quantify drift. The hardware swap (cuVSLAM → EKF2) comes later on the bench.
+> Wiring note: the estimator's odometry is what feeds PX4 EKF2 on hardware (via `VehicleVisualOdometry`/`VISION_POSITION_ESTIMATE`). In **sim**, PX4 already has perfect state, so don't fight it — let SITL use its own state for flight control, and run the estimator **in parallel** purely to validate the pipeline and quantify drift. The hardware swap comes later on the bench.
 
-**✅ Success check:** cuVSLAM publishes continuous odometry and you have a drift number vs. ground truth.
+### Updated 2026-08-13 — this day is now a harness, not a command
+
+Everything below is superseded by **`sweep_gate_a.py`** in the code repo, which is the
+supported path: it flies a candidate across several worlds, N runs each, gates the camera
+tilt/FOV *before* measuring, tears down between runs, keeps a log tail per failure, and
+refuses to score a run whose mission never completed or whose `/clock` stalled because
+Gazebo died. Run it with **absolute paths**.
+
+```bash
+python3 -u sweep_gate_a.py --worlds forest --runs 3                  # rgbd (closed)
+python3 -u sweep_gate_a.py --worlds forest --runs 3 --imu            # + gravity alignment
+python3 -u sweep_gate_a.py --worlds forest --runs 3 --estimator openvins
+python3 check_vio_score.py          # the scoring core: no ROS, no sim, ~0.1 s
+```
+
+**Six things that will waste your afternoon, on top of the gotchas at the bottom of this file:**
+
+1. **A NEW launch file needs `colcon build`.** Editing an existing one does not — the package "builds in place" for Python *nodes* only, and launch files are installed via `data_files`. That asymmetry is what makes it surprising.
+2. **`lost/null: 0` used to be a lie.** rtabmap signals a lost pose with an **all-zero pose**, not a NaN. If you point a new consumer at `/odom`, that is the trap.
+3. **Read `coverage`, not ATE.** On a mission that returns to its origin, an estimate that barely moves scores a *good* ATE for doing nothing.
+4. **Check the build, never the parameter list.** `rtabmap --params | grep OdomOpenVINS` returns 50 parameters on a binary built `WITH_OPENVINS=false`. Use `rtabmap --version`. **A configuration surface is not a capability** — same shape as `camera_imu` appearing in `gz topic -l` with nothing publishing on it.
+5. **`~/ws_px4/src/open_vins` is a patched clone, not a submodule** — 4 lines of Jazzy header migration (`image_transport`, `tf2_geometry_msgs`, `cv_bridge` all went `.h` → `.hpp` and were removed in Jazzy) plus a hard `libceres-dev` dependency. A fresh clone silently breaks it.
+6. **Numbers from before 2026-08-03 are not comparable with numbers after.**
+
+> **`ov_eval` is deliberately not built.** It is OpenVINS's own trajectory scorer, and
+> scoring a candidate with a tool that shares its assumptions is exactly the class of bug
+> this project keeps paying for. `eval_vio_drift.py` stays the instrument.
+
+**✅ Success check:** the estimator publishes continuous odometry, `check_vio_score.py` is green, and the run meets the measured budget — `coverage ≥ 0.8`, ≤ ~1.5 m accumulated position error, ≤ 0.5 °/s yaw drift. **A drift number alone is not the check** — three candidates have now produced one and none is a pose you can fly on.
 
 ---
 
@@ -455,13 +521,16 @@ ros2 launch my_autonomy bringup.launch.py
 ### ✅ Week-1 done when
 Simulated X500 autonomously flies start → goal, avoiding one inserted obstacle, with the map built live from depth and cuVSLAM producing a validated odometry track. That's the §6 Step-1 gate in BUILD.md — **only after this do you start buying hardware.**
 
-> **Status 2026-07-30: not met.** The flight half is done (autonomous start → goal
-> through a doorway, 2026-07-13) and the depth stream is live (Day 4). Missing: the map
-> is still `fake_world`'s synthetic grid, and there is no odometry track or drift
-> number. Per BUILD.md §0.6 the map will be built by **octomap, not nvblox**, and the
-> VIO front-end is undecided — so when this gate is called, state plainly what was
-> validated. "Architecture proven with octomap + PX4 sim pose" is an honest and
-> defensible claim; "nvblox and cuVSLAM validated" would not be.
+> **Status 2026-08-13: the avoidance half is met, the odometry half is not.** The
+> aircraft flies start → goal around an obstacle **on a map it built itself** (Day 7,
+> 2026-07-31), and separately it flies with **GNSS fusion switched off** on an externally
+> supplied pose (2026-08-01). What is still missing is the "validated odometry track":
+> three candidates measured, two closed on evidence, the third produces no pose.
+>
+> So when this gate is called, state plainly what was validated. **"Architecture proven
+> with octomap + a PX4-supplied pose, plus closed-loop flight on an external pose that is
+> simulator truth"** is honest and defensible. **"nvblox and cuVSLAM validated"** is not,
+> and neither is **"GPS-denied navigation."**
 
 ### Upgrade path (don't do these in week 1)
 - **3D planning:** plan over the nvblox ESDF in 3D (e.g. a sampling planner, or `ego-planner` / MAVROS-style local planners) instead of a 2D slice.
@@ -484,7 +553,14 @@ Simulated X500 autonomously flies start → goal, avoiding one inserted obstacle
 - **Watch system RAM, not just VRAM.** `gz sim` with the depth airframe grew at 180 MB/s and was OOM-killed twice on 2026-07-30, the second time taking the desktop session down. The 6 GB VRAM limit is a *separate* constraint with a confusingly similar symptom. Root cause was the unused 1920×1080 RGB camera; fixed by an overlay model (`DEPTH_SIM.md` §4b).
 - **An unused sensor still costs you everything.** Nothing subscribed to that RGB topic, and `always_on=0` didn't stop it either — Gazebo renders declared sensors regardless. If you don't need a sensor, delete it from the model rather than leaving it unsubscribed.
 - **You have two Gazebo installs.** `.bashrc` sources ROS, which sets `GZ_CONFIG_PATH` to the ROS-vendored **8.11.0**; apt has **8.14.0**. Check `gz sim --version` before blaming (or reporting) a version-specific bug.
-- **Don't redirect the `pxh>` console to an uncapped file.** Two SITL logs reached 7.8 GB, almost entirely terminal escape codes.
+- **Don't redirect the `pxh>` console to an uncapped file.** Two SITL logs reached 7.8 GB, almost entirely terminal escape codes. Filter it at the source rather than discarding it — that log is the only record of *why* a run failed.
+- **`use_sim_time` is all-or-nothing across every node.** `offboard_manager` was the one node in the flight stack not on sim time, and it is the one commanding the aircraft: at RTF 0.52 the sequencer gave the aircraft half the sim-time it needed per waypoint, and **three flights out of eight ran away, one by 55 m.** Watch the arming delay — under ~0.25 s between `commanded ARM + OFFBOARD` and `ARMED + OFFBOARD confirmed` is healthy; 31 s means real-time factor has collapsed and the flight is garbage. Also sanity-check truth path length: a 5 m square is ~29–35 m, and 91 m means the aircraft ran away.
+- **A diagnostic must not depend on the thing it diagnoses.** The most reused idea in this project. A heartbeat on a node timer is silent in exactly the case (`use_sim_time` with no `/clock`) it exists to report — put it on a `STEADY_TIME` clock.
+- **QoS is two independent policies, and DDS reports only the first mismatch.** Fixing one and re-testing looks exactly like the fix failing. Never subscribe with default QoS to anything you did not publish, and remember `ros2 topic hz` creates its *own* compatible subscriber, so it shows a healthy topic while your callback never fires once.
+- **NVIDIA kernel modules are prebuilt per kernel version and a kernel upgrade does not carry them over.** `nvidia-smi` failed, Gazebo silently fell back to the Intel iGPU, and **segfaulted mid-sweep** — while RTF read ~1.0 and every arming delay looked healthy. Install the `-generic-hwe-24.04` metapackage so it keeps tracking. And note **"the driver is loaded" and "Gazebo is using it" are different claims**: with `prime-select on-demand` you need the render offload, and only a `gz` process appearing in `nvidia-smi --query-compute-apps` answers the second.
+- **This laptop is thermally constrained.** Measured mid-sweep: CPU package 100 °C, GPU 92 °C against a 95 °C slowdown threshold. Tear down between runs and never leave SITL running — a forgotten Gazebo at 245% CPU once made a *driver* fault look like a *cooling* fault.
+- **`pgrep`/`pkill` without `-f` matches process names**, so `pgrep -a foo.py` finds nothing while `foo.py` is running and looks exactly like a crash. But `-f` then matches *your own shell's* command line — `pkill -f offboard_manager` killed the shell it was typed into. Prefer `pkill -x`, or filter out `$$`/`$PPID`.
+- **Buffered stdout looks like a hang.** A redirected sweep prints nothing for 40 minutes and then everything at once. The results JSON is the reliable progress signal; use `python3 -u` for the console.
 
 ---
 

@@ -68,23 +68,66 @@ Maps to the Hardware role in ROLES.md (Teammate C). Concrete tasks:
    toy VI-EKF). This is the career deliverable, it is entirely offline, and **the fall
    has no room for it**. Partial infrastructure already exists — `~/DPVO` has
    `evaluate_euroc.py` and EuRoC logs. Highest-value hours available.
+
+   > **Status 2026-08-13: step 2 got skipped, and it is now costing time.** OpenVINS was
+   > built and pointed straight at the *aircraft* instead of at EuRoC. It stalls in
+   > initialisation (`not enough feats to compute disp: 0,47 < 15`), and because it has
+   > never been run on a dataset where it is known to work, **there is no reference to
+   > diff against** — every hypothesis has to be ruled out from first principles rather
+   > than by comparison. Running EuRoC is now simultaneously the career deliverable and
+   > the cheapest diagnostic for the live Gate A blocker. Do it first.
+   >
+   > ✅ **Step 2 done 2026-09-01 — ATE 0.221 m on EuRoC MH_01**, and it bounded the Gate A
+   > blocker to the Gazebo side in a single session. **Steps 1 and 3 are still open, and
+   > they are the ones this list exists for.** Step 2 had a live blocker pushing it; 1 and
+   > 3 have nothing but the fall deadline, which is now here.
 2. ⭐ **De-risk Isaac ROS now, on the laptop.** Every decision so far has deliberately
-   deferred it (octomap instead of nvblox, rtabmap instead of cuVSLAM), and BUILD §0.6
-   warns it is "unverified for longer." The dev box can run it: **RTX A3000 6 GB,
-   driver 595.71, 308 GB free**; Docker and the NVIDIA Container Toolkit are *not*
-   installed. Install them, pull the container, run the cuVSLAM quickstart on a
-   dataset. That validates the workflow, the ROS interfaces and the tuning surface —
-   most of which transfers to the Jetson. **If the Isaac ROS × Jazzy × Orin Nano matrix
-   turns out to need Humble, finding out in July is cheap and finding out in October
-   with parts on the bench is not.**
+   deferred it (octomap instead of nvblox, rtabmap instead of cuVSLAM, **now OpenVINS
+   instead of cuVSLAM**), and BUILD §0.6 warns it is "unverified for longer." The dev box
+   can run it: **RTX A3000 6 GB, driver 595.84, 308 GB free**; Docker and the NVIDIA
+   Container Toolkit are *still not* installed. Install them, pull the container, run the
+   cuVSLAM quickstart on a dataset. That validates the workflow, the ROS interfaces and
+   the tuning surface — most of which transfers to the Jetson. **If the Isaac ROS × Jazzy
+   × Orin Nano matrix turns out to need Humble, finding out in July is cheap and finding
+   out in October with parts on the bench is not.**
+
+   > **Deferred four times as of 2026-08-13**, each time by a decision that was
+   > individually correct, which is precisely why this needs scheduling rather than
+   > prioritising. Nothing in the sim work will ever force it.
+   >
+   > ⚠️ **The GPU has already bitten once (2026-08-03), in a way worth knowing before you
+   > pull a CUDA container.** Ubuntu ships **prebuilt** NVIDIA modules per kernel version
+   > and a kernel upgrade does not carry them over: the box was running `7.0.0-28-generic`
+   > with modules only for `6.17.0-{29,35}`. `nvidia-smi` failed, Gazebo silently fell
+   > back to the Intel iGPU, and **segfaulted mid-sweep**, invalidating one run and
+   > probably two more — while RTF read ~1.0 and the arming delays were healthy, so the
+   > usual checks all passed. Fix is the metapackage
+   > `linux-modules-nvidia-595-open-generic-hwe-24.04`, which keeps tracking future
+   > kernels rather than pinning to one. Separately, `prime-select` is `on-demand`, so
+   > **the driver being loaded and Gazebo actually using it are different claims** —
+   > only a `gz` process in `nvidia-smi --query-compute-apps` settles the second.
 3. **Practice Kalibr on a dataset.** Camera–IMU calibration is the one thing sim
    structurally cannot teach — in sim the extrinsic is exact and free; on hardware it
    is vibration, thermal drift and a fiddly toolchain. EuRoC ships calibration data.
-4. Close the Phase-1 gate (an afternoon: point `planner_node` at `/projected_map`).
-5. Research track: the 2-DOF along-track + heading matcher.
+4. ✅ Close the Phase-1 gate — **done 2026-07-31** (it took more than the predicted
+   afternoon; the remap was one line and four silent failures had to be fixed around it).
+5. Research track: the 2-DOF along-track + heading matcher. *(Untouched since 07-13.)*
+6. 🔴 **Added 2026-08-13 — unblock OpenVINS initialisation.** It is the live Gate A
+   blocker, and item 1 is the cheapest way at it.
+7. ⬜ **Added 2026-08-13 — Gate C, which needs no estimator.** `fake_vio` injects drift of
+   a chosen magnitude, so map smear and collision margin under drift are measurable today.
+   The only remaining sim work Gate A does not block.
 
 **Stop:** tuning rtabmap ICP. It does not ship (cuVSLAM does), it cannot test the hard
 part, and it has already produced its honest finding (`VIO.md` §3b).
+
+> **Extended 2026-08-13: stop tuning rtabmap, full stop.** `rgbd_odometry` — the "then use
+> the RGB" successor — is also closed on evidence, both configurations exhausted. The
+> lesson that generalises past rtabmap is in `ISSUES.md` F3: the launch file carried a
+> confident, well-argued paragraph explaining why it did not need `ResetCountdown=1`, and
+> **both halves of it were wrong.** It sat in a list of measured findings, in the same
+> voice, with no data behind it, and blocked a ten-minute experiment for a week. **Mark
+> predictions as predictions, or they become facts by adjacency.**
 
 ---
 
@@ -120,6 +163,21 @@ This sets up the exact ROLES.md split, but with you having a summer head-start t
 - **End of summer:** sim demo + bench VIO working; airframe flight-ready.
 
 **Revised end-of-summer target (no hardware available):** SIM_WEEK1 Days 1–5 done ✅,
-Phase-1 gate closed, **OpenVINS running on EuRoC with a drift number you understand**,
+Phase-1 gate closed ✅, **OpenVINS running on EuRoC with a drift number you understand**,
 **Isaac ROS + cuVSLAM demonstrated in a container on the laptop**, and Kalibr practised
 on a dataset. Bench work moves to the fall, but arrives with no learning curve attached.
+
+> **Progress against that target, 2026-08-13.** Days 1–5 ✅ and the Phase-1 gate ✅, plus
+> two things that were never on this list and are worth more than most of it: **the
+> aircraft flies with GNSS fusion off** (Gate B) and **the error budget any estimator has
+> to meet is measured** (0.5 °/s yaw, ~1.5 m accumulated position). The three learning
+> items are all still open. OpenVINS runs, but on the aircraft rather than EuRoC — which
+> is the wrong order and is currently the reason its failure is hard to diagnose.
+>
+> **Updated 2026-09-01.** One of the three learning items is closed: **OpenVINS runs on
+> EuRoC with a drift number — ATE 0.221 m over 73 m of path on MH_01**, and it is
+> understood well enough to say what the number does and does not cover (settling
+> transient 0.221 m, steady state 0.114 m, 90.5% path coverage, stereo not mono). Still
+> open: **Isaac ROS + cuVSLAM in a container** and **Kalibr on a dataset** — neither has
+> been started, both are pure learning curve, and the fall this list was written to
+> protect has now begun.
