@@ -185,6 +185,36 @@ The general lesson is worth carrying to the Jetson, where headroom is far tighte
 `always_on=0` did not stop it either — a declared sensor renders regardless. Delete
 what you do not need from the model rather than leaving it unsubscribed.
 
+### 0.7 Amendment (2026-09-10) — **the deliverable is now cooperative docking**
+
+The senior project is re-scoped to **Cooperative UAV–UGV Docking** (RSCL Project 2). The
+deliverable spec in §0 becomes the research/mission layer; the graded deliverable is now:
+
+> Two control strategies — UAV-only chase vs. cooperative (UGV velocity broadcast fused
+> with visual relative pose) — compared on the same trajectory, reported as touchdown-error
+> distributions (cm) and docking success rate (%) versus platform speed (m/s). Fall in
+> simulation; spring on hardware, testing whether the sim result transfers.
+
+**What stays:** the X500 V2 + Pixhawk 6C + PX4 + ROS 2 Jazzy platform, the Jetson, the
+safety items. The RealSense D435i stays for the GPS-denied layer; docking does not need it.
+
+**What the parts list gains** (detail and alternatives:
+[`docking/REQUIREMENTS_AND_THEORY.md`](./docking/REQUIREMENTS_AND_THEORY.md)):
+
+| Item | Why |
+|---|---|
+| **Downward global-shutter camera** (mono) | Rolling shutter skews a marker on a moving pad. Gazebo cannot show this, so it is a sim-vs-real gap |
+| Downward rangefinder (TFmini / VL53L1X class) | Height control over the pad |
+| **UGV** — diff-drive or skid-steer rover with a flat 40–60 cm top, encoders + IMU, ROS 2 compute | The moving platform. **Confirm whether the AVL ground platform is available before buying** |
+| Nested AprilTag pad | Keeps the marker in view from cruise altitude to touchdown |
+| Radio link between the vehicles (SiK pair or WiFi/ESP-NOW) | Carries the UGV velocity broadcast |
+| **Ground truth** — overhead camera + fiducials, or lab mocap | Without it there are no touchdown-error distributions |
+| Optical-flow sensor | GPS-denied layer only; the scored flight uses GPS |
+
+**§1.5's scope ladder is superseded** by the docking ladder D0–D5 in
+[README.md](./README.md#phases-scope-ladder--each-is-a-defensible-deliverable). The ladder
+below remains the GPS-denied layer's.
+
 ---
 
 ## 1. Revised Technical Decisions (what changed after review)
@@ -210,6 +240,8 @@ what you do not need from the model rather than leaving it unsubscribed.
 - Onboard autonomy never needs a network. The only internet touch-points are bench-time package/model downloads and a *local* RF telemetry link. State explicitly: **"fully offline, all compute onboard."**
 
 ### 1.5 Scope ladder (so the project can't fully fail)
+> **Superseded 2026-09-10** by the docking ladder (§0.7). This is now the GPS-denied layer's ladder.
+
 1. Sim demo of obstacle avoidance (SITL).
 2. Hardware holds VIO position hover (no drift blowup).
 3. Waypoint following, no obstacles.

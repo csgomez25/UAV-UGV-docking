@@ -16,6 +16,33 @@
 
 ---
 
+## ★ The senior project is now cooperative docking (2026-09-10)
+
+The phases further down were written for the GPS-denied quadrotor. They still describe the
+**GPS-denied research layer**, but the schedule that matters is now this one. The code
+repo's `DOCKING.md` is its technical companion, the same way `GPS_DENIED_PLAN.md` is for
+the GPS-denied layer. The plan itself: [`docking/`](./docking).
+
+| When | Build | Gate | Learn first |
+|---|---|---|---|
+| Week 1 | UGV-sized AprilTag pad on PX4's moving-platform world; downward camera at 640×480; tag → relative pose | D0 | Camera model + calibration; AprilTag detection; PnP (`solvePnP`) |
+| Week 2 | Repeatable stationary-pad landing | D1 | Descent profiles and touchdown criteria; PX4 offboard velocity setpoints |
+| Weeks 3–4 | Pad moving at one speed; UAV-only chase controller; baseline dataset | D2 | Control in a moving frame; cascaded position/velocity control |
+| Weeks 5–6 | UGV velocity broadcast (with latency/noise) fused into the relative estimate + feedforward; 20-trial matrix | D3 | KF with latency compensation; time sync between vehicles |
+| December | **Presentation of the sim result** — distributions, failure cases named | — | — |
+| Jan–Feb | Minimal hardware; airframe flying repeatably before any docking attempt | D4 | PX4 hardware setup, safety gate (the Phase 2 material below applies) |
+| Mar–Apr | Physical docking reproducing the sim numbers | D5 | Ground-truth methods; flight-test methodology |
+| Jun 4–6, 2027 | C-UASC flight event | — | — |
+
+**Competition dates** (verify on the official pages): Blue Skies NOI **Oct 12, 2026** ·
+C-UASC registration **Nov 1, 2026 – Feb 1, 2027** · Blue Skies proposal + video
+**Feb 22, 2027** · C-UASC design submission **May 1, 2027**.
+
+**The VIO ladder below keeps its place** on your own clock. It no longer gates the senior
+project; it gates the Blue Skies version.
+
+---
+
 ## How to use this roadmap
 - **Keep a lab notebook** (a git repo or a Markdown journal). Write down every command that worked, every failure mode, every tuning value. Senior design is graded partly on this; future-you needs it too.
 - **Do the core math by hand once.** Derive a 1D Kalman filter on paper before you trust a library. Plot an A* expansion. You only need to do it once to stop treating these as magic.

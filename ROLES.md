@@ -1,12 +1,55 @@
 # Team Roles & Interfaces
 
-> **Your role decision:** you LEAD **State Estimation / VIO** and own the **autonomy-loop integration**, and you **co-own planning**. This broadens you from CV into a localization/autonomy engineer (see ROADMAP.md "personal development track"). You hand off pure object-detection CV — it's resume-redundant for you.
+> **Docking (2026-09-10 →):** your role is **Autonomy** — see [Docking roles](#docking-roles-2026-09-10--proposed-confirm-at-the-first-meeting) directly below.
+>
+> **Your role decision (GPS-denied phase):** you LEAD **State Estimation / VIO** and own the **autonomy-loop integration**, and you **co-own planning**. This broadens you from CV into a localization/autonomy engineer (see ROADMAP.md "personal development track"). You hand off pure object-detection CV — it's resume-redundant for you.
 >
 > **Team evolution:** **Summer = 2 people** (you = all software/autonomy · friend = structural + electrical). **Fall = 3–4** (add a planning teammate + a control teammate as the course starts).
 >
 > This doc pins the **interface contracts** between roles — the seams are where modular teams succeed or bleed time.
 >
 > Companion docs: [README.md](./README.md) · [BUILD.md](./BUILD.md) · [SUMMER.md](./SUMMER.md) · [ROADMAP.md](./ROADMAP.md)
+
+---
+
+## Docking roles (2026-09-10) — *proposed, confirm at the first meeting*
+
+The senior project is now cooperative UAV–UGV docking ([`docking/`](./docking)). The
+split below replaces the GPS-denied data flow for the critical path; the sections after it
+still describe the GPS-denied layer.
+
+```
+ [UGV]                      [Autonomy]                                          [Flight control]
+ encoders+IMU ─▶ /ugv/broadcast ─┐
+                                 ├─▶ relative-state estimator ─▶ docking controller ─▶ PX4 (offboard)
+ downward camera ─▶ tag pose ────┘       (KF, latency comp.)     (chase | coop)
+                                                                          │
+ [Test / ground truth] ◀── touchdown truth, contact speed, 20-trial matrix ┘
+```
+
+| Role | Owns | Produces |
+|---|---|---|
+| **Autonomy** (you) | Tag relative pose, relative-state estimator, both controllers, integration (topics, frames, launch) | Relative state; setpoints to PX4 |
+| **UGV** | The ground robot: repeatable speed, the velocity/heading broadcast, the pad | `/ugv/broadcast` at an agreed rate, frame and timestamp |
+| **Hardware (friend)** | X500 build, downward camera + rangefinder mounts, vibration isolation, safety items | A manually-flyable airframe with the docking sensors |
+| **Flight control** | PX4 config, failsafes, kill switch, land/disarm behaviour on a moving pad | Reliable base flight (the scoring half of Rule 6) |
+| **Test / ground truth** | Sim worlds, the trial harness, touchdown-truth method, lab notebook | The distributions — and the evaluator's tests |
+
+With fewer people: UGV + hardware merge, and test folds into autonomy for the Fall sim study.
+
+**Seams to write down before coding:**
+1. **UGV → autonomy:** the broadcast message, frame (ENU world vs. UGV body), rate, and
+   whose clock stamps it. Latency is a variable in the study, so the stamp is not optional.
+2. **Camera → autonomy:** tag family and size, nested-tag layout, camera→body transform.
+3. **Autonomy → flight control:** velocity vs. position setpoints, and who decides touchdown
+   and disarm (PX4's land detector cannot be relied on over a moving pad — see the code
+   repo's `DOCKING.md`).
+4. **Everyone → test:** what counts as a successful dock (pad tolerance), fixed before the
+   first moving trial and never changed after.
+
+---
+
+# GPS-denied layer roles (summer 2026)
 
 ---
 

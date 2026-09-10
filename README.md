@@ -1,8 +1,21 @@
-# Autonomous GPS-Denied Quadrotor — Project Hub
+# Cooperative UAV–UGV Docking — Project Hub
 
-A small autonomous quadrotor that navigates and avoids obstacles **without GPS and fully offline** (all compute onboard), across indoor, outdoor, and under-structure environments. Senior design project; this folder is the planning + lab-notebook home.
+**Senior project as of 2026-09-10:** an autonomous drone that lands on a ground robot
+**while the robot is still moving**, by having the two vehicles cooperate — the UGV
+broadcasts its velocity and the UAV fuses that with visual relative pose — rather than
+chasing a passive target (RSCL@CPP Project 2). This folder is the planning + lab-notebook
+home.
 
-> Status (2026-08-13): **the aircraft flies with GNSS fusion off; nothing estimates
+The repo keeps its name from the GPS-denied phase. That work is not abandoned: it is the
+**research/mission layer** (a drone that inspects under structures without GPS and docks
+on a moving ground robot to recharge), no longer the critical path. See
+[Direction change](#direction-change--2026-09-10).
+
+> **Docking status (2026-09-10): planned, nothing built.** The docs are in
+> [`docking/`](./docking); the code has not started. The PX4 checkout already ships a
+> moving-platform world and a downward-camera X500, so Week 1 starts from those.
+
+> GPS-denied layer status (2026-08-13): **the aircraft flies with GNSS fusion off; nothing estimates
 > its pose yet.** The perception→planning→flight loop closes in SITL on a map the
 > aircraft builds itself (Days 4–5, 7), *and* the X500 has flown a full autonomous
 > square with **`EKF2_GPS_CTRL=0`** — no GNSS fusion at any point — on a pose supplied
@@ -18,9 +31,47 @@ A small autonomous quadrotor that navigates and avoids obstacles **without GPS a
 
 ---
 
+## Direction change — 2026-09-10
+
+**What:** the senior project is now **Cooperative UAV–UGV Docking: Reducing Relative
+Landing Error Under Platform Motion and Disturbance**. Hypothesis: a controller that fuses
+the UGV's broadcast velocity with visual relative pose lands with lower touchdown error,
+and succeeds at higher platform speeds, than a UAV-only chase controller.
+
+**Why this project:** the existing stack is already the UAV half (PX4 + ROS 2 offboard
+control, TF, sim harnesses, the trial-sweep methodology), and the AVL perception work is
+the ground-robot half. The new research is the piece in between: relative-state fusion
+and a controller that works in the moving pad's frame.
+
+**How it is sequenced:** build the plain docking version first, with GPS on for anything
+scored; keep GPS-denied inspection as the mission framing and the research layer on top.
+Docking takes relative pose from the fiducial, so it never depends on Gate A closing.
+
+| | Docs |
+|---|---|
+| The plan | [`docking/ONE_PAGER.md`](./docking/ONE_PAGER.md) · [`docking/FIRST_MEETING_PACKET.md`](./docking/FIRST_MEETING_PACKET.md) |
+| Parts, ground truth, theory, sim gaps | [`docking/REQUIREMENTS_AND_THEORY.md`](./docking/REQUIREMENTS_AND_THEORY.md) |
+| Mechanism (code repo) | `DOCKING.md` — what PX4 provides, the gaps, the node plan, gates D0–D5 |
+
+**Competitions:** primary **C-UASC 2027** (registration Nov 1, 2026 – Feb 1, 2027; design
+May 1; flight Jun 4–6). Backup **NASA Gateways to Blue Skies 2027** (NOI Oct 12, 2026;
+proposal + video Feb 22, 2027).
+
+**What stays true from the GPS-denied phase:** every claim rule below. Nothing estimates
+pose yet, so "GPS-denied navigation" is still not claimable, and the Blue Skies framing
+must say the GPS-denied half is in progress.
+
+---
+
 ## The plan, in one paragraph
 
-Use the summer (no deadline) to **de-risk and learn**: stand the full autonomy stack up in **simulation** first, learn **VIO** deeply offline, and secure the **long-lead parts** — so the fall course starts past the painful early phase instead of scrambling. Build on the **PX4-documented reference platform** (Holybro X500 V2 + Jetson Orin Nano + RealSense + ROS 2 Jazzy + Isaac ROS cuVSLAM/nvblox) rather than a risky custom airframe, keeping the custom frame + custom flight-controller PCB as gated stretch goals. Prove obstacle avoidance in sim → bring up hardware → close the loop indoors → then outdoors. Ship a defensible deliverable via a **scope ladder** so the project can't fully fail.
+**Docking (2026-09-10 →):** six weeks of simulation — tag pose, stationary-pad landing,
+a chase baseline on a moving pad, then the cooperative controller, ending in a 20-trial
+matrix (2 strategies × ≥2 platform speeds) reported as distributions. December
+presentation on the sim result. Jan–Feb build minimal hardware, gated on the airframe
+flying repeatably. Mar–Apr reproduce the sim numbers physically, for C-UASC in June.
+
+**GPS-denied phase (summer 2026, original plan):** Use the summer (no deadline) to **de-risk and learn**: stand the full autonomy stack up in **simulation** first, learn **VIO** deeply offline, and secure the **long-lead parts** — so the fall course starts past the painful early phase instead of scrambling. Build on the **PX4-documented reference platform** (Holybro X500 V2 + Jetson Orin Nano + RealSense + ROS 2 Jazzy + Isaac ROS cuVSLAM/nvblox) rather than a risky custom airframe, keeping the custom frame + custom flight-controller PCB as gated stretch goals. Prove obstacle avoidance in sim → bring up hardware → close the loop indoors → then outdoors. Ship a defensible deliverable via a **scope ladder** so the project can't fully fail.
 
 ---
 
@@ -41,6 +92,7 @@ You're broadening from **CV → autonomy/localization engineer.** You lead **Sta
 
 | Doc | What it's for |
 |---|---|
+| [docking/](./docking) | ⭐ **The current project** — one-pager, first-meeting packet, requirements/parts/theory |
 | [BUILD.md](./BUILD.md) | Locked technical decisions, frame/sensor/compute choices, BOM, weight math, risks |
 | [SIM_WEEK1.md](./SIM_WEEK1.md) | Day-by-day commands to stand up sim (ROS 2 Jazzy + PX4 SITL + cuVSLAM/nvblox + the Day-7 autonomy loop) |
 | [ROADMAP.md](./ROADMAP.md) | Learn-just-in-time roadmap + curated resources + your VIO development track |
@@ -51,6 +103,7 @@ You're broadening from **CV → autonomy/localization engineer.** You lead **Sta
 
 | Doc | What it's for |
 |---|---|
+| `DOCKING.md` | 🛬 **The docking mechanism** — what PX4 already provides, the four sim gaps, the node and topic plan, gates D0–D5 |
 | `HANDOFF.md` | 🔁 **Picking the project up cold.** Environment invariants to check *every session*, what works vs. what is structurally broken, the measured budget, and where to pick up. Read §1–§2 first |
 | `TOUR.md` | 🧭 **New here.** Every node and script in a paragraph or less |
 | `GPS_DENIED_PLAN.md` | The three gates, every estimator attempt and what it measured. **This roadmap wins on priority; that one wins on mechanism** |
@@ -315,6 +368,23 @@ project ≈ **15%**.
 
 ## Phases (scope ladder — each is a defensible deliverable)
 
+### Docking — the critical path since 2026-09-10
+
+| Gate | Deliverable | When | % |
+|---|---|---|---|
+| **D0** | Tag relative pose in sim, checked against truth | Week 1 | 0% |
+| **D1** | Repeatable stationary-pad landing in sim | Week 2 | 0% |
+| **D2** | UAV-only chase landing on a moving pad — the baseline | Weeks 3–4 | 0% |
+| **D3** | Cooperative vs. chase, 20-trial matrix → **the Fall result** (December) | Weeks 5–6 | 0% |
+| **D4** | Hardware: airframe flies repeatably; UGV holds a repeatable speed | Jan–Feb | 0% |
+| **D5** | Physical docking reproduces the sim numbers → C-UASC | Mar–Apr | 0% |
+| *stretch* | GPS-denied approach phase — the Blue Skies version, needs Gate A | — | — |
+
+D3 alone is a complete senior project. Each later rung adds to it; none is required for
+it to stand.
+
+### GPS-denied layer — off the critical path since 2026-09-10
+
 1. **Sim** — obstacle avoidance working in SITL · **~46%** (the three gates above; obstacle
    avoidance ✅, GNSS-off flight ✅, the *estimator* ❌)
 2. **Hardware bring-up** — X500 manual flight; cuVSLAM + nvblox on the bench with the real RealSense · **0%**
@@ -325,7 +395,25 @@ project ≈ **15%**.
 
 ---
 
-## Do next (immediate)
+## Do next — docking (2026-09-10)
+
+1. ⬜ **First project meeting** with the three `docking/` docs. Confirm there: whether the
+   AVL ground platform is available, what ground truth the lab has, and CPP eligibility
+   for C-UASC.
+2. ⬜ **D0 in sim.** Override PX4's moving-platform model with a UGV-sized AprilTag pad,
+   put the downward camera at 640×480, and detect the tag → relative pose. Code repo
+   `DOCKING.md` §4 has the node plan.
+3. ⬜ **Write the touchdown evaluator's test before the first trial.** The August lesson
+   (six evaluator bugs, all reporting a good number for a bad run) applies unchanged.
+4. ⬜ **Blue Skies NOI by Oct 12** if the backup is to stay live.
+5. ⬜ **C-UASC registration opens Nov 1.**
+
+---
+
+## Do next — GPS-denied research layer (off the critical path since 2026-09-10)
+
+> The list below is unchanged. It no longer gates the senior project; it gates the Blue
+> Skies version and the VIO career track.
 
 > **Re-prioritised 2026-07-31.** Parts are ~90% chosen (Orin Nano Super + D435i) but
 > the **budget does not unlock until the course starts**, so nothing can be ordered.
@@ -447,6 +535,7 @@ check does **not** wait, and is folded into item 2.)*
 
 | Date | Track | What happened |
 |---|---|---|
+| 2026-09-10 | plan | **Senior project re-scoped to cooperative UAV–UGV docking** (RSCL Project 2). GPS-denied work becomes the research/mission layer. Three planning docs reconciled into `docking/`: one schedule, one competition pair (C-UASC primary, Blue Skies backup), and Fall stated as a sim study that hardware tests for transfer. PX4 v1.18-alpha already ships a moving-platform world, its controller plugin and a downward-camera X500; four gaps recorded in `docking/REQUIREMENTS_AND_THEORY.md` |
 | 2026-09-01 | drone | **VIO ladder step 2 done, and it bounded the Gate A blocker.** OpenVINS on **EuRoC MH_01: ATE 0.221 m over 73 m of path** (0.114 m once settled), stock config, same binary that stalls on the aircraft — so the build and estimator core are sound and §I2 is Gazebo-side. **Not a Gate A score**; no pose on the aircraft, Gate A stays ~30%. Cost 52 km of phantom path first: OpenVINS subscribes to the IMU with `SensorDataQoS()` (depth 5) against 200 Hz, and at full-rate playback the same run diverges to ATE 14682 m with no warning → `ISSUES.md` A4. **Skipping a known-good control did not save the three weeks, it spent them** |
 | 2026-08-13 | drone | **OpenVINS builds and runs — and will not initialise.** Tracks 47 features, never leaves init (`disp: 0,47 < 15`), so no pose. Halving the init window changed the numbers not at all, ruling out track lifetime. Gate A does not move on a candidate that has produced nothing. → `ISSUES.md` §I2 |
 | 2026-08-08 | drone | **Candidate 3 built.** Standalone `ov_msckf` from source — rtabmap's packaged build reports `With OpenVINS: false`, along with every other third-party backend. The old claim "already compiled in" came from `--params \| grep OdomOpenVINS`: **a configuration surface is not a capability.** Also: rtabmap gravity alignment alone extended tracked span **2.81 → 15.69 m (~5.6×)**, the measured argument for visual-inertial |
