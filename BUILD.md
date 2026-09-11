@@ -113,6 +113,11 @@ closure off**: loop closure corrects exactly the drift Day 6 exists to measure.
 > re-measured, not interpolated** — the one model anyone had for this behaviour has
 > already been wrong once, fortunately in the safe direction.
 >
+> ⚠️ **Superseded 2026-09-10.** Re-measured, the same overlay leaks **26.6 MB/s** — the
+> bandwidth model was right after all — and four explanations were ruled out (code repo
+> `ISSUES.md` K1). Every sim camera leaks at frame bandwidth on this machine; runs stay
+> short, on a fresh sim.
+>
 > Both sensors are now also set to the **same 1.274 rad FOV**. They are co-located to the
 > millimetre and identically tilted, so the stereo baseline is exactly zero and depth is
 > registered to RGB purely by matching focal length; upstream's 1.204 rad RGB would be an
@@ -203,10 +208,10 @@ safety items. The RealSense D435i stays for the GPS-denied layer; docking does n
 
 | Item | Why |
 |---|---|
-| **Downward global-shutter camera** (mono) | Rolling shutter skews a marker on a moving pad. Gazebo cannot show this, so it is a sim-vs-real gap |
+| **Downward global-shutter camera** (mono) | Rolling shutter skews a marker on a moving pad. Gazebo cannot show this, so it is a sim-vs-real gap. **Gate D0 (2026-09-10) sets the optics:** at 640×480 with a 100° lens the pad's tags decode only to 1.25 m, so buy a narrower lens (~70°) or ≥ 1280 px wide |
 | Downward rangefinder (TFmini / VL53L1X class) | Height control over the pad |
 | **UGV** — diff-drive or skid-steer rover with a flat 40–60 cm top, encoders + IMU, ROS 2 compute | The moving platform. **Confirm whether the AVL ground platform is available before buying** |
-| Nested AprilTag pad | Keeps the marker in view from cruise altitude to touchdown |
+| AprilTag **bundle** pad (4 × 0.18 m corner tags + 0.10 m centre tag on 0.6 m) | Keeps a marker in view from cruise altitude to touchdown. A bundle, not nested tags: OpenCV cannot decode a tag inside another |
 | Radio link between the vehicles (SiK pair or WiFi/ESP-NOW) | Carries the UGV velocity broadcast |
 | **Ground truth** — overhead camera + fiducials, or lab mocap | Without it there are no touchdown-error distributions |
 | Optical-flow sensor | GPS-denied layer only; the scored flight uses GPS |

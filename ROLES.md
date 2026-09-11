@@ -40,7 +40,9 @@ With fewer people: UGV + hardware merge, and test folds into autonomy for the Fa
 **Seams to write down before coding:**
 1. **UGV → autonomy:** the broadcast message, frame (ENU world vs. UGV body), rate, and
    whose clock stamps it. Latency is a variable in the study, so the stamp is not optional.
-2. **Camera → autonomy:** tag family and size, nested-tag layout, camera→body transform.
+2. **Camera → autonomy:** tag family and size, the tag-bundle layout (one file:
+   the code repo's `docking/config/pad_layout.yaml`), camera→body transform, and the lens —
+   D0 shows the lens decides the approach altitude.
 3. **Autonomy → flight control:** velocity vs. position setpoints, and who decides touchdown
    and disarm (PX4's land detector cannot be relied on over a moving pad — see the code
    repo's `DOCKING.md`).

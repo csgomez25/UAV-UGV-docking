@@ -25,7 +25,7 @@ the GPS-denied layer. The plan itself: [`docking/`](./docking).
 
 | When | Build | Gate | Learn first |
 |---|---|---|---|
-| Week 1 | UGV-sized AprilTag pad on PX4's moving-platform world; downward camera at 640×480; tag → relative pose | D0 | Camera model + calibration; AprilTag detection; PnP (`solvePnP`) |
+| Week 1 | UGV-sized AprilTag pad on PX4's moving-platform world; downward camera at 640×480; tag → relative pose | D0 — 🔄 **flown 2026-09-10, FAIL at 1.25 m**; re-fly after the camera/tag decision | Camera model + calibration; AprilTag detection; PnP (`solvePnP`) |
 | Week 2 | Repeatable stationary-pad landing | D1 | Descent profiles and touchdown criteria; PX4 offboard velocity setpoints |
 | Weeks 3–4 | Pad moving at one speed; UAV-only chase controller; baseline dataset | D2 | Control in a moving frame; cascaded position/velocity control |
 | Weeks 5–6 | UGV velocity broadcast (with latency/noise) fused into the relative estimate + feedforward; 20-trial matrix | D3 | KF with latency compensation; time sync between vehicles |

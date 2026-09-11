@@ -11,9 +11,11 @@ The repo keeps its name from the GPS-denied phase. That work is not abandoned: i
 on a moving ground robot to recharge), no longer the critical path. See
 [Direction change](#direction-change--2026-09-10).
 
-> **Docking status (2026-09-10): planned, nothing built.** The docs are in
-> [`docking/`](./docking); the code has not started. The PX4 checkout already ships a
-> moving-platform world and a downward-camera X500, so Week 1 starts from those.
+> **Docking status (2026-09-10): gate D0 flown — FAIL, usable to 1.25 m against a 1.5 m gate.**
+> The pad's pose from the downward camera is accurate from touchdown to 1.25 m (≥ 98% of
+> frames, ≤ 1.1 cm and ≤ 0.7° at p95). Above that, the tags are too small for a 640×480,
+> 100° camera to decode. **Next: choose lens, resolution or tag size** (code repo
+> `DOCKING.md` §6.1), re-fly D0, then D1. Plan docs: [`docking/`](./docking).
 
 > GPS-denied layer status (2026-08-13): **the aircraft flies with GNSS fusion off; nothing estimates
 > its pose yet.** The perception→planning→flight loop closes in SITL on a map the
@@ -372,7 +374,7 @@ project ≈ **15%**.
 
 | Gate | Deliverable | When | % |
 |---|---|---|---|
-| **D0** | Tag relative pose in sim, checked against truth | Week 1 | 0% |
+| **D0** | Tag relative pose in sim, checked against truth | Week 1 | 🔄 **flown 2026-09-10, FAIL** — accurate 0–1.25 m, gate asks 1.5 m; blocked on a camera/tag decision |
 | **D1** | Repeatable stationary-pad landing in sim | Week 2 | 0% |
 | **D2** | UAV-only chase landing on a moving pad — the baseline | Weeks 3–4 | 0% |
 | **D3** | Cooperative vs. chase, 20-trial matrix → **the Fall result** (December) | Weeks 5–6 | 0% |
@@ -400,11 +402,17 @@ it to stand.
 1. ⬜ **First project meeting** with the three `docking/` docs. Confirm there: whether the
    AVL ground platform is available, what ground truth the lab has, and CPP eligibility
    for C-UASC.
-2. ⬜ **D0 in sim.** Override PX4's moving-platform model with a UGV-sized AprilTag pad,
-   put the downward camera at 640×480, and detect the tag → relative pose. Code repo
-   `DOCKING.md` §4 has the node plan.
-3. ⬜ **Write the touchdown evaluator's test before the first trial.** The August lesson
-   (six evaluator bugs, all reporting a good number for a bad run) applies unchanged.
+2. 🔄 **D0 in sim — flown 2026-09-10, FAIL at 1.25 m.** Built: the docking world and a
+   0.6 m pad with a 5-tag bundle, `tag_pose_node`, and a harness that scores every frame
+   against Gazebo truth. **Decide how to extend the range** — narrower lens (~70°,
+   recommended), 1280×960, or bigger corner tags — then re-fly. Code repo `DOCKING.md` §6.1,
+   `docking/results/d0/`.
+3. ✅ **Write the evaluator's test before the first number.** Done for D0:
+   `check_d0_score.py`, 12 synthetic flights with known verdicts. It caught a scorer bug
+   before any flight — a pad layout rotated 90° passed. D1's touchdown evaluator needs its
+   own, before its first trial.
+3a. ⬜ **D1 needs its own touchdown and disarm logic.** PX4 took up to 61 s to detect a
+   landing on the raised pad, even a stationary one (code repo `ISSUES.md` K8).
 4. ⬜ **Blue Skies NOI by Oct 12** if the backup is to stay live.
 5. ⬜ **C-UASC registration opens Nov 1.**
 
@@ -535,6 +543,7 @@ check does **not** wait, and is folded into item 2.)*
 
 | Date | Track | What happened |
 |---|---|---|
+| 2026-09-10 | docking | **Gate D0 flown: FAIL, usable envelope 0–1.25 m against a 1.5 m gate.** From touchdown to 1.25 m: ≥ 98% of in-view frames get a pose, p95 ≤ 1.1 cm and ≤ 0.7°. Above that, the 0.18 m tags stop decoding on a 640×480, 100° camera, and the 1–2-tag poses left are 6–30° off. The limit is sensing geometry, not the estimator. Three runs; two found rig defects first (near clip, best-effort image loss). Also found: **every Gazebo camera leaks at frame bandwidth** — including the August "measured safe" one — and Gazebo maps a plane's texture rotated 90° |
 | 2026-09-10 | plan | **Senior project re-scoped to cooperative UAV–UGV docking** (RSCL Project 2). GPS-denied work becomes the research/mission layer. Three planning docs reconciled into `docking/`: one schedule, one competition pair (C-UASC primary, Blue Skies backup), and Fall stated as a sim study that hardware tests for transfer. PX4 v1.18-alpha already ships a moving-platform world, its controller plugin and a downward-camera X500; four gaps recorded in `docking/REQUIREMENTS_AND_THEORY.md` |
 | 2026-09-01 | drone | **VIO ladder step 2 done, and it bounded the Gate A blocker.** OpenVINS on **EuRoC MH_01: ATE 0.221 m over 73 m of path** (0.114 m once settled), stock config, same binary that stalls on the aircraft — so the build and estimator core are sound and §I2 is Gazebo-side. **Not a Gate A score**; no pose on the aircraft, Gate A stays ~30%. Cost 52 km of phantom path first: OpenVINS subscribes to the IMU with `SensorDataQoS()` (depth 5) against 200 Hz, and at full-rate playback the same run diverges to ATE 14682 m with no warning → `ISSUES.md` A4. **Skipping a known-good control did not save the three weeks, it spent them** |
 | 2026-08-13 | drone | **OpenVINS builds and runs — and will not initialise.** Tracks 47 features, never leaves init (`disp: 0,47 < 15`), so no pose. Halving the init window changed the numbers not at all, ruling out track lifetime. Gate A does not move on a candidate that has produced nothing. → `ISSUES.md` §I2 |

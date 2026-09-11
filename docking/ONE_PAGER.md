@@ -37,6 +37,10 @@ it does not replace them. Every plot says which of the two it is.
 | 5 | **Cooperative** controller: UGV velocity broadcast (with realistic latency/noise) fused with visual relative pose, used as feedforward | The research core | Multi-camera perception, sensor-fusion experience |
 | 6 | **20-trial matrix**: 2 strategies × ≥2 platform speeds | **First plot worth discussing** | Drift-budget sweep methodology already demonstrated |
 
+**Week 1 status (2026-09-10):** built and measured. Tag pose accurate from touchdown to
+1.25 m (≥ 98% of frames, ≤ 1.1 cm and ≤ 0.7° at p95); above that the tags are too small for
+the simulated camera. The lens choice is the open decision.
+
 **Full arc:** Weeks 1–6 sim → **December presentation** (mission + statistics). Jan–Feb: build
 minimal hardware, gated on the airframe **flying repeatably** before any docking attempt.
 **Mar–Apr:** physical docking that reproduces the sim numbers. C-UASC design submission May 1;

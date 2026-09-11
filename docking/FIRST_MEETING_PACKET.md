@@ -34,6 +34,12 @@ A cooperative controller in which the UGV broadcasts its velocity/heading and th
 **Fall is a simulation study, and is reported as one.** Spring hardware tests whether the result
 transfers; it does not replace it.
 
+**Progress at the time of the meeting:** Week 1 is built and measured. The pad's pose from
+the downward camera is accurate from touchdown to 1.25 m (≥ 98% of frames, ≤ 1.1 cm and
+≤ 0.7° at p95), scored against simulator truth over 2,617 frames. Above 1.25 m the tags are
+too small for the simulated 640 × 480, 100° camera, which makes the lens a design decision
+to settle before D1.
+
 **Full arc (real timeline):** Fall = sim research → **December presentation** (mission + stats). Jan–Feb = build minimal hardware, gated on the airframe flying repeatably before any docking attempt. **Mar–Apr = physical docking that reproduces the sim numbers.** C-UASC design submission May 1; flight Jun 4–6, 2027.
 
 ## 5. Primary + backup competition (Rule 7 — exactly one each)
