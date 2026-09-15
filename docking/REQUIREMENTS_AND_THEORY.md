@@ -18,12 +18,12 @@ PX4 (v1.18-alpha, the checkout in use) ships a `moving_platform` world, a `Movin
 | Gap | Why it matters | Fix |
 |-----|----------------|-----|
 | The stock platform is a **5 × 5 m, 2 m tall, 10 t** deck | That is a ship, not a UGV — docking on it proves nothing about a ~50 cm pad | ✅ **Done 2026-09-10:** own world with a 0.6 m pad (deck at 0.30 m) carrying a 5-tag bundle. Static for D0/D1 — the plugin has no horizontal position hold, so even at zero speed its pad wanders |
-| The plugin **does not publish platform state** | There is no "UGV broadcast" for the cooperative strategy to use | Add Gazebo's `OdometryPublisher` to the overlay, bridge it to ROS 2, and pass it through a node that adds **latency, noise and dropouts** — otherwise the cooperative arm gets oracle data and the comparison is unfair |
-| `mono_cam` renders **1280 × 960** | Gazebo camera memory leaks at frame bandwidth | ✅ **Measured 2026-09-10:** 111.8 MB/s at 1280 × 960, 26.6 MB/s at 640 × 480 — so every camera leaks, 640 × 480 included. Overlay at 640 × 480, short runs on a fresh sim |
+| The plugin **does not publish platform state** | There is no "UGV broadcast" for the cooperative strategy to use | Add Gazebo's `OdometryPublisher` to the overlay, bridge it to ROS 2, and pass it through a node that adds **latency, noise and dropouts** — otherwise the cooperative arm gets oracle data and the comparison is unfair. 🔄 **2026-09-14:** our own moving pad publishes odometry (M0 PASS); the latency/noise layer (`ugv_broadcaster`) is not built |
+| `mono_cam` renders **1280 × 960** | Gazebo camera memory leaks at frame bandwidth | ✅ **Fixed 2026-09-14:** the leak was PX4's `GstCameraSystem` video streamer, not the camera (measured 2026-09-10: 111.8 MB/s at 1280 × 960, 26.6 MB/s at 640 × 480). The code repo's `run_sim.sh` leaves it out; memory is flat, and the camera is back at 1280 × 960 |
 | Platform disturbance is **fixed** (hard-coded noise amplitude) | A disturbance axis in the trial matrix needs levels | Fork the plugin if disturbance becomes a matrix axis |
 
 Two PX4 behaviours to design around:
-- **Land detection on a moving pad.** `LNDMC_XY_VEL_MAX` defaults to 1.5 m/s: a UAV resting on a pad moving faster than that still looks airborne to PX4. Touchdown must be detected independently (pad contact sensor + truth poses), and disarm handled explicitly.
+- **Land detection on a moving pad.** `LNDMC_XY_VEL_MAX` defaults to 1.5 m/s: a UAV resting on a pad moving faster than that still looks airborne to PX4. Touchdown must be detected independently (pad contact sensor + truth poses), and disarm handled explicitly. **Done for the static pad (D1, 2026-09-15):** the controller decides touchdown from tag height + PX4 vertical speed and force-disarms 0.3–0.4 s after contact; the scorer uses a pad contact sensor.
 - **PX4's `NAV_LAND` descends in the world frame** while the pad drives away. Docking stays in offboard control until contact.
 
 **Baseline choice to state up front:** PX4 has in-tree precision-landing estimators (`vision_target_estimator`, `landing_target_estimator`). Either include one as a third comparison arm or say why not — a reviewer will ask.
@@ -31,6 +31,8 @@ Two PX4 behaviours to design around:
 **Known sim-vs-real gap:** Gazebo cameras are effectively global-shutter. The rolling-shutter penalty on a moving marker (below) only shows up on hardware. The sim also has no depth of field, so the near-touchdown results are geometry, not optics.
 
 **Measured, 2026-09-10 (gate D0):** the tag bundle gives an accurate pose from touchdown to **1.25 m** (≥ 98% of frames, ≤ 1.1 cm and ≤ 0.7° at p95) on a 640 × 480, 100° camera. Above that the 0.18 m tags stop decoding. **The camera choice sets the approach altitude:** a narrower lens (~70°) or ≥ 1280 px roughly doubles it. **PX4 also took up to 61 s to detect a landing on the raised pad, even stationary** — so the land-detection item above applies before the pad ever moves.
+
+**Measured, 2026-09-14/15 (gates D0, H0, D1):** at **1280 × 960** and the same 100° lens the pose holds to **2.5 m** (p95 ≤ 2.3 cm, ≤ 1.1°), so resolution alone settled the approach altitude. The drone holds over the pad by camera (p95 ≤ 2.8 cm) and lands on the static pad **20/20**, touchdown error median 1.2 cm, max 2.7 cm. **One hardware lesson:** resting on the pad the camera is 8.6 cm above the tags and sees only ±10 × ±7.7 cm, so a landing ~3 cm off centre sees no whole tag. A smaller centre tag or a higher camera mount closes that.
 
 ---
 
@@ -41,7 +43,7 @@ Two PX4 behaviours to design around:
 | Flight controller | Pixhawk-class, PX4-compatible (e.g. Pixhawk 6C) | SITL firmware/code transfers directly |
 | Airframe + power | ~500-class quad dev kit (frame, motors, ESCs, props, power module, battery) | X500-style PX4 dev kits bundle most of this |
 | Companion computer | Raspberry Pi 4/5 **or** Jetson Orin Nano | Jetson if running onboard vision; Pi is enough for the estimator alone |
-| **Downward camera** | **Global-shutter** camera (mono is fine), **~70° lens or ≥ 1280 px wide** | Rolling shutter skews/blurs the marker on a moving pad — this matters. Gate D0: at 640 × 480 and 100° the pad's tags decode only to 1.25 m |
+| **Downward camera** | **Global-shutter** camera (mono is fine), **~70° lens or ≥ 1280 px wide** | Rolling shutter skews/blurs the marker on a moving pad — this matters. Gate D0: at 640 × 480 and 100° the pad's tags decode only to 1.25 m; **at 1280 × 960 and 100°, to 2.5 m** |
 | Near-pad altitude | Downward rangefinder (LiDAR: TFmini / VL53L1X-class) | Tight height control over the pad |
 | Position hold without GNSS | Optical-flow sensor (PMW3901-class) | For the GPS-denied research layer — the scored flight uses GPS |
 | Cooperation + telemetry link | Telemetry radio (SiK 915 MHz) or WiFi/ESP-NOW | Carries UGV velocity broadcast + MAVLink |
@@ -104,11 +106,12 @@ Two PX4 behaviours to design around:
 
 ## What can start now (zero hardware, zero cost)
 1. ✅ UGV-sized, AprilTag-marked pad in a docking world; the downward-camera X500 flies over it (2026-09-10).
-2. ✅ Tag relative-pose detection, scored against simulator truth — gate D0, accurate to 1.25 m (2026-09-10). Next: extend the range (lens, resolution or tag size).
-3. Bridge the platform's odometry into ROS 2 through a latency/noise layer — the simulated UGV broadcast.
+2. ✅ Tag relative-pose detection, scored against simulator truth — gate D0: 1.25 m at 640 × 480 (2026-09-10), **2.5 m at 1280 × 960** (2026-09-14).
+2b. ✅ Stationary-pad landing by camera alone — gate D1, **20/20** (2026-09-15); the pad robot drives its path (M0, 2026-09-14).
+3. Bridge the platform's odometry into ROS 2 through a latency/noise layer — the simulated UGV broadcast. *(Odometry bridged; the latency/noise layer is next.)*
 4. Build both controllers: (a) UAV-only chase, (b) cooperative with UGV velocity feedforward.
 5. Run the 20-trial matrix in sim across ≥2 platform speeds → first version of the results table.
 6. Only then buy hardware to validate the sim-proven result.
 
 ---
-*As of Sep 10, 2026. Confirm current part models, availability, and prices — and lab safety approval for flight — before spending money.*
+*Status updated Sep 15, 2026. Parts as of Sep 10, 2026. Confirm current part models, availability, and prices — and lab safety approval for flight — before spending money.*

@@ -6,12 +6,29 @@ broadcasts its velocity and the UAV fuses that with visual relative pose — rat
 chasing a passive target (RSCL@CPP Project 2). This folder is the planning + lab-notebook
 home.
 
-The repo keeps its name from the GPS-denied phase. That work is not abandoned: it is the
+The repo was renamed from `GPS-Denied-Drone` to **`UAV-UGV-docking`** on 2026-09-15 (the code repo
+to `UAV-UGV-docking-CodeStack` the same day; old URLs redirect). The GPS-denied work is not abandoned: it is the
 **research/mission layer** (a drone that inspects under structures without GPS and docks
 on a moving ground robot to recharge), no longer the critical path. See
 [Direction change](#direction-change--2026-09-10).
 
-> **Docking status (2026-09-10): gate D0 flown — FAIL, usable to 1.25 m against a 1.5 m gate.**
+> **Docking status (2026-09-15): the drone lands on a static pad by camera alone, 20/20, in sim.**
+>
+> | Gate | Result | Date |
+> |---|---|---|
+> | M0 — the pad robot drives its path | ✅ 9/9 (circle, rounded square, square × 0.5/1.0/1.5 m/s), position p95 ≤ 1.7 cm | 09-14 |
+> | D0 — the tag gives a relative pose | ❌ 0–1.25 m at 640×480 → ✅ **0–2.5 m at 1280×960**, p95 ≤ 2.3 cm, ≤ 1.1° | 09-10 / 09-14 |
+> | H0 — hold over the pad by camera alone | ✅ 3/3 heights, hold p95 ≤ 2.8 cm, from takeoff 0.94 m off the pad | 09-15 |
+> | D1 — land on the static pad, 20 trials | ❌ 19/20 → ✅ **20/20**, touchdown error median 1.2 cm, max 2.7 cm (tolerance 10 cm) | 09-15 |
+>
+> What unblocked it: the sim's camera memory leak was PX4's video streamer, not the camera,
+> so the resolution could double. **Next: D2**, the UAV-only chase baseline on the moving pad
+> (Weeks 3–4). Still true: nothing has landed on a *moving* pad, nothing is cooperative yet, and
+> all of it is simulation. D1 is the ladder step, not the result — a static-pad landing is the
+> guide's *DO NOT DO THIS* if it were the deliverable. Results and runbook: the code repo's
+> [`docking/`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/tree/main/docking).
+>
+> *Earlier status, kept:* **2026-09-10: gate D0 flown — FAIL, usable to 1.25 m against a 1.5 m gate.**
 > The pad's pose from the downward camera is accurate from touchdown to 1.25 m (≥ 98% of
 > frames, ≤ 1.1 cm and ≤ 0.7° at p95). Above that, the tags are too small for a 640×480,
 > 100° camera to decode. **Next: choose lens, resolution or tag size** (code repo
@@ -105,7 +122,8 @@ You're broadening from **CV → autonomy/localization engineer.** You lead **Sta
 
 | Doc | What it's for |
 |---|---|
-| `DOCKING.md` | 🛬 **The docking mechanism** — what PX4 already provides, the four sim gaps, the node and topic plan, gates D0–D5 |
+| `DOCKING.md` | 🛬 **The docking mechanism** — what PX4 already provides, the four sim gaps, the node and topic plan, gates D0–D5 (plus M0 and H0), with results |
+| `docking/README.md` | 🛬 **The docking runbook** — every gate's commands, nodes and topics; results in `docking/results/{m0,d0,h0,d1}/` |
 | `HANDOFF.md` | 🔁 **Picking the project up cold.** Environment invariants to check *every session*, what works vs. what is structurally broken, the measured budget, and where to pick up. Read §1–§2 first |
 | `TOUR.md` | 🧭 **New here.** Every node and script in a paragraph or less |
 | `GPS_DENIED_PLAN.md` | The three gates, every estimator attempt and what it measured. **This roadmap wins on priority; that one wins on mechanism** |
@@ -139,10 +157,11 @@ are now **symlinks** into that repo. That keeps `colcon build` working from `~/w
 >
 > | Repo | Holds |
 > |---|---|
-> | [`csgomez25/GPS-Denied-Drone`](https://github.com/csgomez25/GPS-Denied-Drone) | this one — planning, roadmap, lab notebook |
-> | [`csgomez25/GPS_Denied`](https://github.com/csgomez25/GPS_Denied) **(private)** | all the code — `gps_denied_autonomy/` + `bev_gps_denied/` |
+> | [`csgomez25/UAV-UGV-docking`](https://github.com/csgomez25/UAV-UGV-docking) | this one — planning, roadmap, lab notebook (was `GPS-Denied-Drone`) |
+> | [`csgomez25/UAV-UGV-docking-CodeStack`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack) **(private)** | all the code — `docking/` + `gps_denied_autonomy/` + `bev_gps_denied/` (was `GPS_Denied`) |
 >
-> The code repo was briefly named `GPS_Denied_drone`; that URL still redirects.
+> The code repo was briefly named `GPS_Denied_drone`, then `GPS_Denied`; both URLs redirect.
+> The local checkout keeps its folder name, `~/gps-denied-drone-stack/`.
 > Unrelated: `csgomez25/IGVC_BEV` is the ground-vehicle competition project, not this.
 
 ---

@@ -37,9 +37,12 @@ it does not replace them. Every plot says which of the two it is.
 | 5 | **Cooperative** controller: UGV velocity broadcast (with realistic latency/noise) fused with visual relative pose, used as feedforward | The research core | Multi-camera perception, sensor-fusion experience |
 | 6 | **20-trial matrix**: 2 strategies × ≥2 platform speeds | **First plot worth discussing** | Drift-budget sweep methodology already demonstrated |
 
-**Week 1 status (2026-09-10):** built and measured. Tag pose accurate from touchdown to
-1.25 m (≥ 98% of frames, ≤ 1.1 cm and ≤ 0.7° at p95); above that the tags are too small for
-the simulated camera. The lens choice is the open decision.
+**Weeks 1–2 status (2026-09-15):** done, in sim. Tag pose accurate from touchdown to **2.5 m**
+at 1280 × 960 (p95 ≤ 2.3 cm, ≤ 1.1°); 1.25 m at 640 × 480 on 09-10 set that decision. The
+drone finds, holds over (p95 ≤ 2.8 cm) and **lands on the stationary pad by camera alone,
+20/20**, touchdown error median 1.2 cm, max 2.7 cm against a 10 cm tolerance fixed from the
+skid geometry beforehand (a first run was 19/20). The pad robot already drives circles and
+squares to within 1.7 cm. **Next: Week 3, the chase baseline on the moving pad.**
 
 **Full arc:** Weeks 1–6 sim → **December presentation** (mission + statistics). Jan–Feb: build
 minimal hardware, gated on the airframe **flying repeatably** before any docking attempt.
@@ -75,4 +78,4 @@ not the VIO work is finished.
 - **Ground truth:** does the lab have motion capture, or is it the overhead-camera option?
 
 ---
-*Reality check (as of Sep 10, 2026): verify all competition rules and eligibility on the official pages before committing money or travel.*
+*Status updated Sep 15, 2026. Reality check (as of Sep 10, 2026): verify all competition rules and eligibility on the official pages before committing money or travel.*

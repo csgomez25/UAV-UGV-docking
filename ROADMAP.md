@@ -5,7 +5,7 @@
 > Companion docs: [README.md](./README.md) (plan going forward) · [BUILD.md](./BUILD.md) (decisions/BOM) · [SIM_WEEK1.md](./SIM_WEEK1.md) (week-1 commands) · [ROLES.md](./ROLES.md) (team) · [SUMMER.md](./SUMMER.md) (pre-work).
 >
 > **Technical companion:** the code repo's
-> [`GPS_DENIED_PLAN.md`](https://github.com/csgomez25/GPS_Denied/blob/main/GPS_DENIED_PLAN.md)
+> [`GPS_DENIED_PLAN.md`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/blob/main/GPS_DENIED_PLAN.md)
 > — every estimator attempt and what it measured, the **three** gates this document
 > treats as one, and the next build with file and parameter names attached. **This
 > document wins on priority and schedule; that one wins on mechanism.** Its companions
@@ -25,9 +25,9 @@ the GPS-denied layer. The plan itself: [`docking/`](./docking).
 
 | When | Build | Gate | Learn first |
 |---|---|---|---|
-| Week 1 | UGV-sized AprilTag pad on PX4's moving-platform world; downward camera at 640×480; tag → relative pose | D0 — 🔄 **flown 2026-09-10, FAIL at 1.25 m**; re-fly after the camera/tag decision | Camera model + calibration; AprilTag detection; PnP (`solvePnP`) |
-| Week 2 | Repeatable stationary-pad landing | D1 | Descent profiles and touchdown criteria; PX4 offboard velocity setpoints |
-| Weeks 3–4 | Pad moving at one speed; UAV-only chase controller; baseline dataset | D2 | Control in a moving frame; cascaded position/velocity control |
+| Week 1 | UGV-sized AprilTag pad on PX4's moving-platform world; downward camera; tag → relative pose | D0 — ✅ **PASS 2026-09-14 at 1280×960, 0–2.5 m** (FAIL 09-10 at 640×480, 1.25 m) | Camera model + calibration; AprilTag detection; PnP (`solvePnP`) |
+| Week 2 | Moving pad drives its path (M0 ✅ 09-14); hover over the pad by camera (H0 ✅ 09-15); repeatable stationary-pad landing | D1 — ✅ **PASS 2026-09-15, 20/20** (19/20 first), median 1.2 cm | Descent profiles and touchdown criteria; PX4 offboard velocity setpoints |
+| Weeks 3–4 | Pad moving at one speed; UAV-only chase controller; baseline dataset | D2 — ⬜ **next** | Control in a moving frame; cascaded position/velocity control; a Kalman filter on the relative state |
 | Weeks 5–6 | UGV velocity broadcast (with latency/noise) fused into the relative estimate + feedforward; 20-trial matrix | D3 | KF with latency compensation; time sync between vehicles |
 | December | **Presentation of the sim result** — distributions, failure cases named | — | — |
 | Jan–Feb | Minimal hardware; airframe flying repeatably before any docking attempt | D4 | PX4 hardware setup, safety gate (the Phase 2 material below applies) |

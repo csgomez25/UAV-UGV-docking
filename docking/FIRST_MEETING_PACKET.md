@@ -40,6 +40,12 @@ the downward camera is accurate from touchdown to 1.25 m (≥ 98% of frames, ≤
 too small for the simulated 640 × 480, 100° camera, which makes the lens a design decision
 to settle before D1.
 
+**Update, 2026-09-15:** Weeks 1–2 are done in sim. At 1280 × 960 the tag pose holds to
+**2.5 m**. The drone lands on the stationary pad by camera alone in **20/20** trials, each
+started 0.8–1.2 m off the pad (touchdown error median 1.2 cm, max 2.7 cm, tolerance 10 cm fixed
+beforehand; a first run failed 19/20 on a touchdown-detection bug, kept on record). Next is
+Week 3: the pad moving, UAV-only chase.
+
 **Full arc (real timeline):** Fall = sim research → **December presentation** (mission + stats). Jan–Feb = build minimal hardware, gated on the airframe flying repeatably before any docking attempt. **Mar–Apr = physical docking that reproduces the sim numbers.** C-UASC design submission May 1; flight Jun 4–6, 2027.
 
 ## 5. Primary + backup competition (Rule 7 — exactly one each)
