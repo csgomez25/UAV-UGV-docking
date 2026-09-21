@@ -2,7 +2,7 @@
 
 > Goal for the week: a simulated X500 takes off and flies a waypoint **autonomously via offboard control**, with a depth camera streaming into ROS 2, and an occupancy map building from that depth. No hardware, no crash risk.
 >
-> Companion doc: [BUILD.md](./BUILD.md). Target stack: PX4 SITL + Gazebo + ROS 2 **Jazzy** + Isaac ROS (cuVSLAM/nvblox).
+> Companion doc: [BUILD.md](../BUILD.md). Target stack: PX4 SITL + Gazebo + ROS 2 **Jazzy** + Isaac ROS (cuVSLAM/nvblox).
 >
 > ⚠️ **These are starting-point commands.** Package names, repo paths, and versions drift — cross-check each against the official PX4 / ROS 2 / Isaac ROS docs (linked at the bottom) as you go. Don't paste blindly.
 
@@ -13,7 +13,7 @@
 > **Read the gate as three, not one.** "Days done / 7" hides the fact that Day 6 is a
 > research problem and the rest were integration problems. Current split: Estimate ❌ ~30%
 > · Closed-loop-flight-without-GPS ✅ 100% · Survives-drift ⬜ ~5%. See
-> [README.md](./README.md#the-three-gates--read-this-before-any-percentage).
+> [GPS_DENIED_LOG.md](./GPS_DENIED_LOG.md#the-three-gates--read-this-before-any-percentage).
 
 | Day | Milestone | Status | Evidence / blocker |
 |---|---|---|---|
@@ -310,7 +310,7 @@ Two things the original check asked for that were **not** done, and why:
 > **`gps_denied_autonomy/MAPPING.md`**. Summary below.
 
 > **Revised 2026-07-30: `octomap_server`, not nvblox.** Full rationale and accepted
-> costs in [BUILD.md §0.6](./BUILD.md). nvblox stays the *flight* stack on the Jetson;
+> costs in [BUILD.md §0.6](../BUILD.md). nvblox stays the *flight* stack on the Jetson;
 > this substitution is for the laptop sim only. The original nvblox route is kept below
 > for Phase 2.
 

@@ -2,7 +2,7 @@
 
 > Philosophy: **learn just-in-time.** Don't pre-study six months of theory. Learn each concept right before the build step that forces you to use it — you'll retain 10× more. Each phase below pairs *what you build* with *what to learn first* and *where to learn it*.
 >
-> Companion docs: [README.md](./README.md) (plan going forward) · [BUILD.md](./BUILD.md) (decisions/BOM) · [SIM_WEEK1.md](./SIM_WEEK1.md) (week-1 commands) · [ROLES.md](./ROLES.md) (team) · [SUMMER.md](./SUMMER.md) (pre-work).
+> Companion docs: [README.md](./README.md) (plan going forward) · [BUILD.md](./BUILD.md) (decisions/BOM) · [ROLES.md](./ROLES.md) (team) · [archive/SIM_WEEK1.md](./archive/SIM_WEEK1.md) (week-1 commands, historical) · [archive/SUMMER.md](./archive/SUMMER.md) (original pre-work plan, historical).
 >
 > **Technical companion:** the code repo's
 > [`GPS_DENIED_PLAN.md`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/blob/main/GPS_DENIED_PLAN.md)
@@ -38,7 +38,7 @@ the GPS-denied layer. The plan itself: [`docking/`](./docking).
 C-UASC registration **Nov 1, 2026 – Feb 1, 2027** · Blue Skies proposal + video
 **Feb 22, 2027** · C-UASC design submission **May 1, 2027**.
 
-**The VIO ladder below keeps its place** on your own clock. It no longer gates the senior
+**The VIO ladder below keeps its place.** It no longer gates the senior
 project; it gates the Blue Skies version.
 
 ---
@@ -50,14 +50,17 @@ project; it gates the Blue Skies version.
 
 ---
 
-## ★ Your personal development track — VIO → autonomy engineer
+## ★ The VIO / state-estimation development track
 
-Your goal isn't "do the project," it's **broaden from CV into an autonomy/localization engineer.** Your owned area is **State Estimation / VIO lead + autonomy-loop integration** (see [ROLES.md](./ROLES.md)). The key principle that makes this safe:
+For whoever owns **State Estimation / VIO lead + autonomy-loop integration** (see
+[ROLES.md](./ROLES.md)), the goal is broader than shipping the project: build real
+depth in VIO/localization, not just wire up a library. The key principle that makes
+this safe:
 
 > **Learn VIO deeply on one clock; deliver VIO on another.**
 
 - **Deliver (project clock):** integrate, calibrate, tune, and characterize **cuVSLAM** on the real sensor → feed PX4 EKF2 → measure drift. This *is* real localization engineering and it's what ships.
-- **Learn the internals (your clock, offline, can't block the project):** datasets, not the aircraft.
+- **Learn the internals (offline, can't block the project):** datasets, not the aircraft.
 
 **VIO learning ladder (do in order):**
 1. ⭐ *Kalman & Bayesian Filters in Python* (Labbe) — work the EKF notebooks; derive a 1D filter by hand once.
@@ -69,7 +72,7 @@ Your goal isn't "do the project," it's **broaden from CV into an autonomy/locali
 > (`not enough feats to compute disp: 0,47 < 15`), and because it has **never been run on
 > a dataset where it is known to work**, there is no reference to diff against — every
 > hypothesis has to be ruled out from first principles instead of by comparison. Step 2
-> is now simultaneously the career deliverable *and* the cheapest diagnostic available
+> is now simultaneously the learning-ladder priority *and* the cheapest diagnostic available
 > for the live blocker. Do it.
 >
 > ✅ **Step 2 done 2026-09-01 — and it paid immediately.** OpenVINS on **EuRoC MH_01**:
@@ -90,14 +93,12 @@ Your goal isn't "do the project," it's **broaden from CV into an autonomy/locali
 5. Learn **Kalibr** (camera–IMU calibration) — you'll use it for real on the RealSense.
 6. **cuVSLAM** in sim → on the bench with the real RealSense → into EKF2 → drift number.
 
-**Resume line this builds:** "CV engineer who built the VIO-based localization and integrated the full autonomy loop for a GPS-denied drone." That's a localization/autonomy story anchored in your existing CV strength.
-
-> Don't solo the riskiest box blind: VIO is the schedule-dominating risk (BUILD.md §4). Pair on hard debugging, validate early/offline, and keep a fiducial/mocap localization fallback for flight tests so VIO tuning can't block the demo.
+> Don't leave the riskiest box to one person working alone: VIO is the schedule-dominating risk (BUILD.md §4). Pair on hard debugging, validate early/offline, and keep a fiducial/mocap localization fallback for flight tests so VIO tuning can't block the demo.
 
 ---
 
 ## Phase 0 — Foundations + Sim bring-up  (Weeks 1–2) — ✅ **done**
-**Build:** everything in [SIM_WEEK1.md](./SIM_WEEK1.md) — ROS 2 Jazzy, PX4 SITL, fly an offboard waypoint, depth into ROS.
+**Build:** everything in [archive/SIM_WEEK1.md](./archive/SIM_WEEK1.md) — ROS 2 Jazzy, PX4 SITL, fly an offboard waypoint, depth into ROS.
 
 > **Status 2026-07-30: ✅ complete.** You write ROS 2 nodes from scratch
 > (`planner_node`, `offboard_manager`, `fake_world`, `px4_tf_publisher`), the sim drone
@@ -295,151 +296,25 @@ measured VIO drift number ✅ (19.0 m ATE — a real measurement, and a failing 
 
 ---
 
-## Start RIGHT NOW (re-prioritised 2026-07-31 — hardware is budget-locked)
+## GPS-denied layer — current priorities
 
-> **What changed.** Parts are ~90% decided (Orin Nano Super + D435i) but the budget
-> does not unlock until the course starts. Nothing can be ordered. So the binding
-> constraint is no longer money — it is **fall time**, which goes to assembly,
-> bring-up, calibration, integration and mentoring two new teammates. The remaining
-> summer exists to climb the learning curves *now*, because the fall has no room for
-> them. See [SUMMER.md](./SUMMER.md).
->
-> Consequence: **the Phase-1 sim gate no longer gates anything.** It existed to decide
-> "is it safe to buy hardware?" and budget already decided that. Close it for the
-> milestone; don't let it displace items 1–3.
+The detailed, dated blow-by-blow of this list (budget-lock reasoning, every VIO
+candidate's numbers, what's already closed out) has been superseded several times over
+and is preserved in [archive/GPS_DENIED_LOG.md](./archive/GPS_DENIED_LOG.md). The
+standing priorities, current as of the docking pivot:
 
-1. ⭐ **VIO ladder, steps 1–3** (Labbé's filters → OpenVINS on EuRoC → your own toy
-   VI-EKF). This *is* the career deliverable and the sim work will never produce it.
-   Entirely offline, so parts cannot block it. `~/DPVO` already carries
-   `evaluate_euroc.py` and EuRoC logs. **Highest-value hours available this summer.**
+1. ⭐ Unblock OpenVINS initialisation — the live Gate A blocker.
+2. ⭐ De-risk Isaac ROS in a container on the dev box (Docker + NVIDIA Container Toolkit
+   still not installed; the Isaac ROS × Jazzy × Orin Nano support-matrix check gates
+   hardware bring-up and should not wait for it).
+3. Practice Kalibr on a public dataset (EuRoC).
+4. Measure yaw drift rate — the error-budget term that actually binds and that nothing
+   currently measures.
+5. Gate C (drift survivability) — reachable today via `fake_vio`, no estimator needed.
+6. Research track: the 2-DOF along-track + heading matcher, then RPE + significance test.
 
-   > **Now doubly justified (2026-08-13).** Step 2 got skipped — OpenVINS was pointed at
-   > the aircraft directly and is stuck in initialisation with no working reference to
-   > compare against. Running it on EuRoC is the cheapest diagnostic available for the
-   > live Gate A blocker *and* the thing you wanted to do anyway.
-   >
-   > ✅ **Step 2 closed 2026-09-01** — OpenVINS on EuRoC MH_01 at **ATE 0.221 m over 73 m
-   > of path**, and it bounded the Gate A blocker to the Gazebo side in one session. It
-   > also caught a bug that would have been blamed on the estimator: at full-rate playback
-   > the same run diverges to ATE 14682 m because OpenVINS subscribes to the IMU with
-   > `SensorDataQoS()` (best-effort, depth 5) against a 200 Hz stream. That one is
-   > **unfixed and will hit the aircraft harder than it hit the bag replay.**
-   >
-   > **Steps 1 and 3 are still open, and they are the career deliverable.** Step 2 was the
-   > one with a project excuse attached; 1 (Labbé's filters) and 3 (your own MSCKF-lite on
-   > EuRoC) have none, and September is where the roadmap says they stop being possible.
-2. ⭐ **De-risk Isaac ROS on the laptop.** Every decision so far deferred it — octomap
-   instead of nvblox, rtabmap instead of cuVSLAM, **and now OpenVINS instead of cuVSLAM**
-   — and BUILD §0.6 flags it as "unverified for longer". The dev box can run the
-   container (RTX A3000 6 GB, driver **595.84**, 308 GB free); Docker and the NVIDIA
-   Container Toolkit are **still** not installed. Install, pull, run the cuVSLAM
-   quickstart on a dataset. This also discharges the §0.5 ⚠️ support-matrix item, which
-   must **not** wait for the budget: if Isaac ROS × Jazzy × Orin Nano needs Humble, that
-   invalidates a lot of Jazzy-specific work and July is a much cheaper time to find out
-   than October.
-
-   > **Deferred four times now, each time correctly, which is exactly the problem.**
-   > §0.6 predicted this: once sim stopped forcing the question, nothing else would. The
-   > candidate ladder has run rtabmap → rgbd → OpenVINS without ever reaching the one
-   > front-end that actually ships on the Jetson.
-3. **Practice Kalibr on a dataset.** Camera–IMU calibration is precisely what sim
-   cannot teach — the sim extrinsic is exact and free, the hardware one is vibration,
-   thermal drift and a fiddly toolchain. EuRoC ships calibration data.
-4. ✅ **Close the Phase-1 gate** — done 2026-07-31. The swap was the one-line remap it
-   was designed to be; everything else in `PHASE1_GATE.md` exists because a *perceived*
-   map is not a synthetic one (unbounded extent, unknown space, a goal that may not be
-   in the map yet).
-5. ✅ **Fly on a pose PX4 did not compute — DONE 2026-08-01.** Armed, flew a 5 m square
-   to 3.16 m and landed with **`EKF2_GPS_CTRL=0`**, on a pose fed to
-   `/fmu/in/vehicle_visual_odometry` from Gazebo ground truth. EKF2 tracked truth to
-   mean 0.073 m / max 0.199 m. Phase-3 work pulled into sim, and it cost one session
-   instead of flight tests — exactly the argument for doing it early.
-
-   **It paid off the way decoupling is supposed to.** The flight failed on the first
-   attempt, and the cause was a bug that had been corrupting *every integer PX4
-   parameter this project sets* since the script was written: MAVLink carries params in
-   a float32 field and PX4 reads integers out of it bytewise, so `EKF2_EV_CTRL=15` was
-   stored as 1097859072. The read-back verified nothing because it round-trips the same
-   corruption. It had never mattered while GNSS was on, and became fatal the instant it
-   was switched off. Found against a *perfect* pose in an afternoon; against a drifting
-   estimator in October it would have been a week and blamed on the estimator.
-
-   **The budget is measured.** Sweeping injected drift until the gate fails: 0.02 m/s
-   passes, 0.05 m/s does not. More useful than the number itself is *why* — **EKF2 does
-   not attenuate the drift at all**, because with GNSS off external vision is the only
-   aiding source and there is nothing to test it against. Observed error equals injected
-   error, one for one.
-
-   So **the spec for Gate A is accumulated position error (~1.5 m), not a drift rate** —
-   a longer mission fails at a proportionally lower rate. Measured ICP is ATE 19.0 m over
-   58.6 m, which misses that bar by more than an order of magnitude. Detail:
-   `CLOSED_LOOP.md` §8.
-
-   **The yaw sweep is finished (2026-08-02), and the answer is structural.** The ceiling
-   is **0.5 °/s with a cliff immediately behind it**: 1.0 °/s does not degrade the
-   mission, it **never completes it** (2× the parameter, 26× the error; the aircraft was
-   still airborne when the gate timed out). §3.3 did not find ICP's yaw drift merely
-   large — it found yaw *unobservable*, and an unobservable DOF has no rate to tune down.
-   That settles the tuning-vs-structural question quantitatively rather than by
-   intuition, and it is the sharpest thing Gate B produced.
-   ✅ **The full budget is measured — four knobs, 20 runs (2026-08-02):** yaw
-   **0.5 °/s** · position **0.02 m/s ≈ 1.5 m accumulated** · latency **200 ms** · noise
-   **no ceiling below 0.6 m**. The two that bind are yaw and accumulated position;
-   latency and noise have room to spare. The noise result carries a licence worth
-   quoting: **EKF2 filters zero-mean error hard and cannot filter bias**, so *an
-   estimator for Gate A may be noisy; it may not be biased.*
-6. ✅🟡 **Day 6 — timeboxed, and the timebox is now spent.** The `ratio=0` cause is
-   found and fixed (one failed registration cleared the velocity model, and
-   `Odom/ResetCountdown` defaults to *never reset* — so a single bad frame wedged
-   odometry permanently; `--Odom/ResetCountdown 1` took registration from 4.3% to
-   80.3%). Ground truth is done and needed **no** Gazebo `PosePublisher` — the pose topic
-   existed in a stock world all along (`SceneBroadcaster` is in PX4's own
-   `server.config`); PX4 simply never exported it over DDS, so the fix was two entries in
-   `dds_topics.yaml`. **Per this item's own instruction, ICP parameter work stopped
-   there** — the remaining failure is an unobservable DOF, and a DOF that is
-   geometrically unobservable cannot be recovered by tuning. rtabmap does not ship;
-   cuVSLAM does.
-7. 🔴 **UNBLOCK OPENVINS — the live Gate A blocker (2026-08-08).** Built from source and
-   running, tracking 47 features, and it never leaves initialisation:
-   `not enough feats to compute disp: 0,47 < 15`. **Halving `init_window_time` left both
-   numbers EXACTLY unchanged**, which kills the track-lifetime explanation and points at
-   the feature database holding a single timestamp. Print what `_db` contains; do not
-   tune another threshold. Evidence and the ruled-out list: `ISSUES.md` §I2. See item 1 —
-   EuRoC is the reference this diagnosis is missing.
-8. ⬜ **Measure yaw drift rate.** 0.5 °/s is the budget that binds and **nothing measures
-   it**: `eval_vio_drift.py` has no attitude handling at all, so every Gate A number to
-   date is position-only. Needs `/odom` orientation against
-   `/fmu/out/vehicle_attitude_groundtruth`.
-9. ⬜ **Gate C — reachable now, and it needs no estimator.** `fake_vio` injects drift of a
-   chosen magnitude, so the two failures that only appear closed-loop are measurable
-   today: **map smear** (the octomap is built in a frame assumed globally consistent;
-   under drift it corrupts itself — the standard fix is a mapper in `odom` with
-   `map → odom → base_link`) and **collision margin** (`inflation_radius` is 0.4 m, sized
-   for a *perfect* pose; it must be sized against measured drift over the replan
-   interval). This is the one remaining sim item that Gate A does not block.
-10. ⬜ **Give the Gate A mission somewhere to go.** It currently returns to its origin, so
-   a frozen estimator scores well at both ends — no statistic fully fixes a test a broken
-   estimator passes by doing nothing. **Do this before ranking the next candidate.**
-11. ⬜ **Research track**: the 2-DOF along-track + heading matcher; then RPE and a paired
-   significance test. *(Untouched since 2026-07-13.)*
-12. ⬜ Audit-enroll in the **UPenn Aerial Robotics** Coursera course.
-
-*(Deferred to the fall with the budget: verifying Orin Nano vs. the old Nano, and
-ordering the D435i and the X500 kit.)*
-
-*(Done: all code under git and pushed; SIM_WEEK1 Days 1–5; the Phase-1 gate flown on the
-perceived map; the octomap and rtabmap scope decisions recorded in BUILD.md §0.6; the
-Day-4 TF conflict, the Gazebo RAM leak, the octomap ground filter, the planner's
-unknown-space policy, the `icp_odometry` reset latch, and the false-groundtruth
-measurement error — all found, fixed and measured.)*
-
-*(Also done since, 2026-08-02 → 08-13: Gate B flown and its budget swept; the integer-param
-encoding bug found and fixed; RGB restored to the overlay at 640×480 and measured not to
-leak; `optical_frame_relay` written so image front-ends get a real optical frame;
-`sweep_gate_a.py` built so Gate A runs are flown by a harness rather than by hand; six
-evaluator bugs fixed and `check_vio_score.py` built to stop the seventh; the A3000 kernel
-module fixed and Gazebo verified bound to the GPU by process table; `rgbd_odometry` closed
-on evidence; OpenVINS built from source with a 4-line Jazzy patch.)*
+The VIO ladder (Labbé's filters → OpenVINS/EuRoC → a toy VI-EKF) above stays the
+priority skill-building path for whoever owns this track.
 
 > Buying is deferred to the fall by budget, not by the gate. When funds unlock,
 > verify the §0.5 ⚠️ items first, then order the long-lead D435i.

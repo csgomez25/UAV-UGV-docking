@@ -2,7 +2,7 @@
 
 > Working consolidation of the proposal critique + the build path forward.
 > Last updated: 2026-06-02
-> Companion docs: [SIM_WEEK1.md](./SIM_WEEK1.md) (week-1 sim commands) · [ROADMAP.md](./ROADMAP.md) (learning + build roadmap) · [ROLES.md](./ROLES.md) (team split) · [SUMMER.md](./SUMMER.md) (get-ahead pre-work plan)
+> Companion docs: [ROADMAP.md](./ROADMAP.md) (learning + build roadmap) · [ROLES.md](./ROLES.md) (team split) · [archive/SIM_WEEK1.md](./archive/SIM_WEEK1.md) (week-1 sim commands, historical) · [archive/SUMMER.md](./archive/SUMMER.md) (original pre-work plan, historical)
 
 ---
 
@@ -33,7 +33,7 @@ Keep the dream in the intro; keep the graded thing measurable.
 > nothing can be ordered this summer. That does *not* excuse item 2 below: the Isaac
 > ROS × Orin Nano × Jazzy support matrix is a **documentation check, not a purchase**,
 > and if it comes back "Humble only" it invalidates a lot of Jazzy-specific work. Do it
-> now, folded into the Isaac ROS container de-risk in SUMMER.md. Item 1 (confirming the
+> now, folded into the Isaac ROS container de-risk in archive/SUMMER.md. Item 1 (confirming the
 > board is an *Orin* Nano) can wait for the order.
 >
 > **Still true 2026-08-13, and item 2 is still not done.** Six more weeks of Gate A work
@@ -133,7 +133,7 @@ at the `ratio=0` cause — then move on regardless of the outcome. rtabmap does 
 ship; cuVSLAM does. Days spent tuning ICP buy nothing that transfers, and the sim
 cannot test the part that actually matters (camera–IMU calibration). With hardware
 budget-locked until the fall, that time is far better spent de-risking Isaac ROS itself
-and climbing the VIO ladder — see SUMMER.md "Revised priorities".
+and climbing the VIO ladder — see archive/SUMMER.md "Revised priorities".
 
 > **The timebox was honoured on ICP and then spent twice over on its successors
 > (2026-08-13).** Both blockers closed: ground truth needed **no `PosePublisher`** (two
@@ -258,7 +258,7 @@ Custom STM32H7 flight-controller PCB stays a stretch goal, gated on (4) being so
 
 ## 2. Platform Strategy — buy the de-risked reference, customize later
 
-Your payload is **not small**: depth camera + Pi 5 + accelerator + battery is ~250–350 g of gear. That forces a real aircraft and kills the original 500–650 g / 4" target (see §5). Two honest realities:
+The payload is **not small**: depth camera + Pi 5 + accelerator + battery is ~250–350 g of gear. That forces a real aircraft and kills the original 500–650 g / 4" target (see §5). Two honest realities:
 
 1. A 4" custom 3D-printed frame **cannot** carry this payload with usable thrust margin or flight time.
 2. The fastest path to a *working autonomy stack* is the platform PX4 already documents for exactly this — companion computer + depth camera + VIO + offboard.
@@ -272,7 +272,7 @@ Your payload is **not small**: depth camera + Pi 5 + accelerator + battery is ~2
 | **Holybro X500 V2** (recommended) | 10" | PX4-documented, easy payload room, stable, good wind handling, depth-cam + companion mounts exist | 10" props dangerous indoors → need large net/cage + prop guards; ~610 mm | **Main build** |
 | 7" custom (carbon arms + printed plates) | 7" | Lighter, better indoor safety than 10", decent payload | Cramped layout, more design work, less documented | Good middle ground if you want "custom" sooner |
 | 5" build | 5" | Agile, cheapest, safest indoors | Marginal payload + very short flight time with this gear | Only if payload shrinks (e.g. OAK-D + no Hailo) |
-| Full custom 3D-printed | — | Your original goal | Pure-PETG arms fail; needs carbon arms + PA-CF plates | **Stretch goal** |
+| Full custom 3D-printed | — | The original goal | Pure-PETG arms fail; needs carbon arms + PA-CF plates | **Stretch goal** |
 
 **If/when you do go custom:** don't 3D-print the load path. Use carbon-fiber tube arms + carbon center plates; 3D-print *only* the camera mount, companion-computer tray, battery cradle, and prop guards — and print those in **PA-CF (carbon-filled nylon)** or at least PETG, not PLA.
 
@@ -316,8 +316,8 @@ With a Jetson doing CUDA inference, the OAK-D's only real advantage (onboard AI)
 
 **Rough total: ~$1,090–1,290.** (Dropping the Hailo roughly offsets the Orin Nano costing more than a Pi 5.)
 
-### Not on your original list but needed
-- **RC transmitter** (e.g. RadioMaster) if you don't own one — ~$80–200
+### Not on the original list but needed
+- **RC transmitter** (e.g. RadioMaster) if the team doesn't already own one — ~$80–200
 - **Ground-station laptop** running QGroundControl (probably already have)
 - **Indoor safety enclosure / net** — price/borrow this; 10" props need real containment
 - **Prop guards** for indoor flight
@@ -338,7 +338,7 @@ Rough all-up estimate with the Path A payload:
 | FC + PDB + GPS + RX + wiring | 90 |
 | **All-up** | **~1,100–1,300 g** |
 
-- This is **~2× your original 500–650 g target.** The 4" frame was never going to work.
+- This is **~2× the original 500–650 g target.** The 4" frame was never going to work.
 - Target **thrust-to-weight ≥ 2:1** (so ≥ ~2.6 kg total thrust). X500-class 10" props on 2216-class motors hit this comfortably; a 4–5" build does not with this payload.
 - **Expect short flights** regardless — budget Li-ion packs for endurance and plan test sessions around battery swaps.
 
@@ -350,7 +350,7 @@ Rough all-up estimate with the Path A payload:
 
 0. **Verify the two ⚠️ items in §0.5 first** (Orin Nano not old Nano; Isaac ROS × Orin Nano × Jazzy version matrix). These gate everything below.
 
-1. **Stand up simulation first (Week 1–2, ~$0).** → see **[SIM_WEEK1.md](./SIM_WEEK1.md)** for the day-by-day checklist.
+1. **Stand up simulation first (Week 1–2, ~$0).** → see **[archive/SIM_WEEK1.md](./archive/SIM_WEEK1.md)** for the day-by-day checklist.
    - Install PX4 + Gazebo SITL + ROS 2 **Jazzy**. (PX4↔ROS link is uXRCE-DDS, distro-agnostic; Jazzy works even though PX4 docs lean Humble.)
    - Bridge the simulated X500 + depth camera into ROS 2; get a depth → nvblox occupancy → A* → offboard loop flying a waypoint in sim.
    - This validates the whole stack with zero crash risk and proves the architecture before hardware.
@@ -368,14 +368,14 @@ Rough all-up estimate with the Path A payload:
 
 **Resolved:** compute (Jetson Orin Nano), accelerator (none), sensor (D435i), ROS distro (Jazzy), frame (X500 V2). Autopilot leaning PX4, finalize in sim.
 
-**Team (known):** Summer = 2 (you = software/autonomy, leading VIO + integration; friend = structural + electrical). Fall = 3–4 (add planning + control teammates). See [ROLES.md](./ROLES.md) and [SUMMER.md](./SUMMER.md).
+**Team (known):** started as 2 people (one on software/autonomy, leading VIO + integration; one on structural + electrical) over summer 2026; growing to 3–4 for the senior-design team (add planning + control teammates). See [ROLES.md](./ROLES.md) and [archive/SUMMER.md](./archive/SUMMER.md).
 
 Still open:
 - [ ] **Verify** Orin Nano (not old Nano) + Isaac ROS Jazzy support matrix — see §0.5 ⚠️.
-- [ ] **Confirm the funding source** — is the parts budget reimbursable over summer, or only once the course starts? (Drives buy-now vs wait — SUMMER.md.)
+- [ ] **Confirm the funding source** — is the parts budget reimbursable before the course starts, or only once it does? (Drives buy-now vs wait — archive/SUMMER.md.)
 - [ ] Indoor test space: netted/enclosed area sized for a 500-class drone with 10" props? (Drives prop-guard / cage needs.)
-- [ ] Do you already own an RC transmitter / charger / bench supply?
-- [ ] Sim: Gazebo (light, standard) vs Isaac Sim (heavier, but matches the NVIDIA stack and gives photoreal depth — you already have a Jetson workflow).
+- [ ] Does the team already own an RC transmitter / charger / bench supply?
+- [ ] Sim: Gazebo (light, standard) vs Isaac Sim (heavier, but matches the NVIDIA stack and gives photoreal depth, given the existing Jetson workflow).
 
 ---
 

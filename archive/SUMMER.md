@@ -4,7 +4,7 @@
 >
 > Goal of the summer: **de-risk + learn + secure long-lead parts** so that when the course starts you're past the slow, painful early phase instead of rushing for parts and fighting toolchains. Not "have a flying autonomous drone by August" — that's not the goal and would be a trap.
 >
-> Companion docs: [BUILD.md](./BUILD.md) · [SIM_WEEK1.md](./SIM_WEEK1.md) · [ROADMAP.md](./ROADMAP.md) · [ROLES.md](./ROLES.md)
+> Companion docs: [BUILD.md](../BUILD.md) · [SIM_WEEK1.md](./SIM_WEEK1.md) · [ROADMAP.md](../ROADMAP.md) · [ROLES.md](../ROLES.md)
 
 ---
 
