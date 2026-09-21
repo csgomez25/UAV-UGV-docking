@@ -91,8 +91,7 @@ defensible deliverable via a **scope ladder** so the project can't fully fail.
 
 ## Team
 
-The project started in summer 2026 as a two-person effort (one person on software/
-autonomy, one on structural/electrical) and is now expanding into a full senior-design
+Expanding into a full senior-design
 team for the docking project. Current role split, interface contracts, and how the team
 scales as people join: [ROLES.md](./ROLES.md).
 
@@ -106,7 +105,7 @@ scales as people join: [ROLES.md](./ROLES.md).
 | [BUILD.md](./BUILD.md) | Locked technical decisions, frame/sensor/compute choices, BOM, weight math, risks |
 | [ROADMAP.md](./ROADMAP.md) | Learn-just-in-time roadmap + curated resources + the VIO development track |
 | [ROLES.md](./ROLES.md) | Team split, the data flow, and the interface contracts to nail |
-| [archive/](./archive) | Pre-pivot solo/summer-era logs (day-by-day sim bring-up, the original 2-person plan, the full GPS-denied status history) |
+| [archive/](./archive) | Pre-pivot solo/summer-era logs (day-by-day sim bring-up, the original plan, the full GPS-denied status history) |
 
 **And in the code repo**, which moves faster than this one and wins on mechanism:
 
@@ -217,9 +216,7 @@ it to stand.
 
 ## Do next — docking
 
-1. ⬜ **First project meeting** with the three `docking/` docs. Confirm there: whether the
-   AVL ground platform is available, what ground truth the lab has, and CPP eligibility
-   for C-UASC.
+1. ⬜ **First project meeting** with the three `docking/` docs. 
 2. ⬜ **D2 next** — UAV-only chase controller on the moving pad, the baseline the
    cooperative controller has to beat.
 3. ✅ **Write the evaluator's test before the first number.** Done for D0/D1:
