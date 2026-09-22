@@ -14,7 +14,7 @@ without GPS and docks on a moving ground robot to recharge), no longer the criti
 See [Direction change](#direction-change--2026-09-10). Full pre-pivot history:
 [archive/](./archive).
 
-> **Docking status (2026-09-15): the drone lands on a static pad by camera alone, 20/20, in sim.**
+> **Docking status (2026-09-21): the drone lands on a MOVING pad by camera alone, 20/20 at 0.5 m/s, in sim.**
 >
 > | Gate | Result | Date |
 > |---|---|---|
@@ -22,11 +22,14 @@ See [Direction change](#direction-change--2026-09-10). Full pre-pivot history:
 > | D0 — the tag gives a relative pose | ❌ 0–1.25 m at 640×480 → ✅ **0–2.5 m at 1280×960**, p95 ≤ 2.3 cm, ≤ 1.1° | 09-10 / 09-14 |
 > | H0 — hold over the pad by camera alone | ✅ 3/3 heights, hold p95 ≤ 2.8 cm, from takeoff 0.94 m off the pad | 09-15 |
 > | D1 — land on the static pad, 20 trials | ❌ 19/20 → ✅ **20/20**, touchdown error median 1.2 cm, max 2.7 cm (tolerance 10 cm) | 09-15 |
+> | D2 — chase baseline, land on the moving pad, 20 trials | ✅ **20/20 at 0.5 m/s**, touchdown error median 2.1 cm, max 4.2 cm, scored against the pad where it was at contact | 09-21 |
 >
-> **Next: D2**, the UAV-only chase baseline on the moving pad (Weeks 3–4). Still true:
-> nothing has landed on a *moving* pad, nothing is cooperative yet, and all of it is
-> simulation. D1 is a ladder step, not the result. Results and runbook: the code repo's
-> [`docking/`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/tree/main/docking).
+> **Next: D3**, the cooperative controller (the UGV's velocity broadcast) against this chase
+> baseline. At 0.5 m/s the chase is already near-perfect, so D3 needs faster pads (1.0 and
+> 1.5 m/s) to show a difference. Still true: nothing is cooperative yet, and all of it is
+> simulation. Results and runbook: the code repo's
+> [`docking/`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/tree/main/docking), one folder per gate under
+> [`docking/gates/`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/tree/main/docking/gates).
 
 > **GPS-denied layer status:** the aircraft flies with GNSS fusion off; nothing estimates
 > its pose yet. The perception→planning→flight loop closes in SITL on a map the
@@ -112,7 +115,8 @@ scales as people join: [ROLES.md](./ROLES.md).
 | Doc | What it's for |
 |---|---|
 | `DOCKING.md` | 🛬 **The docking mechanism** — what PX4 already provides, the four sim gaps, the node and topic plan, gates D0–D5 (plus M0 and H0), with results |
-| `docking/README.md` | 🛬 **The docking runbook** — every gate's commands, nodes and topics; results in `docking/results/{m0,d0,h0,d1}/` |
+| `docking/README.md` | 🛬 **The docking runbook** — every gate's commands, nodes and topics |
+| `docking/gates/` | 🛬 **One folder per gate** (`d0`, `m0`, `h0`, `d1`, `d2`): its scorer, runner, plot, launch file and `results/`. `gates/README.md` is the index |
 | `HANDOFF.md` | 🔁 **Picking the project up cold.** Environment invariants to check *every session*, what works vs. what is structurally broken, the measured budget, and where to pick up. Read §1–§2 first |
 | `TOUR.md` | 🧭 **New here.** Every node and script in a paragraph or less |
 | `GPS_DENIED_PLAN.md` | The three gates, every estimator attempt and what it measured. **This roadmap wins on priority; that one wins on mechanism** |
@@ -193,7 +197,7 @@ confirmed. Overall GPS-denied project ≈ **15%**; docking is now the active cri
 |---|---|---|---|
 | **D0** | Tag relative pose in sim, checked against truth | Week 1 | 🔄 **flown 2026-09-14, PASS** at 1280×960, 0–2.5 m |
 | **D1** | Repeatable stationary-pad landing in sim | Week 2 | ✅ **flown 2026-09-15, 20/20** |
-| **D2** | UAV-only chase landing on a moving pad — the baseline | Weeks 3–4 | 0% |
+| **D2** | UAV-only chase landing on a moving pad — the baseline | Weeks 3–4 | ✅ **flown 2026-09-21, 20/20 at 0.5 m/s** |
 | **D3** | Cooperative vs. chase, 20-trial matrix → **the Fall result** (December) | Weeks 5–6 | 0% |
 | **D4** | Hardware: airframe flies repeatably; UGV holds a repeatable speed | Jan–Feb | 0% |
 | **D5** | Physical docking reproduces the sim numbers → C-UASC | Mar–Apr | 0% |
@@ -217,13 +221,13 @@ it to stand.
 ## Do next — docking
 
 1. ⬜ **First project meeting** with the three `docking/` docs. 
-2. ⬜ **D2 next** — UAV-only chase controller on the moving pad, the baseline the
-   cooperative controller has to beat.
-3. ✅ **Write the evaluator's test before the first number.** Done for D0/D1:
-   `check_d0_score.py`, synthetic flights with known verdicts. D2's chase evaluator
-   needs its own, before its first trial.
-4. ⬜ **Blue Skies NOI by Oct 12** if the backup is to stay live.
-5. ⬜ **C-UASC registration opens Nov 1.**
+2. ✅ **D2 done 2026-09-21** — the chase baseline lands on the moving pad, 20/20 at 0.5 m/s.
+3. ⬜ **D3 next** — `ugv_broadcaster` (latency, noise, dropout) and the cooperative controller,
+   then chase vs. coop at 1.0 and 1.5 m/s, where the chase should start to struggle.
+4. ✅ **Write the evaluator's test before the first number.** Done for every gate through D2
+   (`check_<gate>_score.py`, synthetic runs with known verdicts). D3's needs its own.
+5. ⬜ **Blue Skies NOI by Oct 12** if the backup is to stay live.
+6. ⬜ **C-UASC registration opens Nov 1.**
 
 ## Do next — GPS-denied research layer (off the critical path)
 
@@ -251,6 +255,7 @@ it to stand.
 
 | Date | Track | What happened |
 |---|---|---|
+| 2026-09-21 | docking | **Gate D2 passed: the chase baseline lands on the moving pad, 20/20 at 0.5 m/s**, touchdown error median 2.1 cm, max 4.2 cm. Every landing came after the pad's first corner, where the chase overshoots ~25 cm and pauses its descent. The code repo's `docking/` is now organized one folder per gate. |
 | 2026-09-15 | docking | **Weeks 1–2 done in sim.** At 1280×960 the tag pose holds to 2.5 m. The drone lands on the stationary pad by camera alone, 20/20 trials, touchdown error median 1.2 cm. |
 | 2026-09-14 | docking | **M0 and H0 flown.** The pad robot drives its path (9/9 patterns/speeds); the drone hovers over the pad by camera alone (3/3 heights). D0 re-flown at 1280×960: usable range extends 1.25 m → 2.5 m. |
 | 2026-09-10 | docking | **Gate D0 flown: FAIL, usable envelope 0–1.25 m against a 1.5 m gate.** The limit is sensing geometry (tag size vs. camera FOV/resolution), not the estimator. |
