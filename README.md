@@ -14,46 +14,56 @@ without GPS and docks on a moving ground robot to recharge), no longer the criti
 See [Direction change](#direction-change--2026-09-10). Full pre-pivot history:
 [archive/](./archive).
 
-> **Docking status (2026-09-22): the drone lands on a MOVING pad by camera alone — 20/20 at
-> 0.5 m/s, and 6/6 at 1.0 m/s on a straight path. It cannot yet land on a pad that TURNS at
-> 1.0 m/s or faster. All in sim.**
+> **Docking status (2026-10-06): D3, the chase-vs-coop comparison, is built, checked, and
+> flown as looks. With the UGV's broadcast, coop lands on a pad that keeps turning (the sine)
+> where chase never does; a pad with sudden corners still defeats both at a 200 ms link. All in
+> sim, 6 trials per cell: looks, not the scored D3 result.**
 >
 > | Gate | Result | Date |
 > |---|---|---|
-> | M0 — the pad robot drives its path | ✅ 9/9 (circle, rounded square, square × 0.5/1.0/1.5 m/s), position p95 ≤ 1.7 cm; ✅ **15/15 re-run** with two new paths (straight line, sine wave) × 5 speeds, p95 ≤ 2.4 cm | 09-14 / 09-22 |
+> | M0 — the pad robot drives its path | ✅ 9/9, then ✅ **15/15** with line and sine paths × 5 speeds, position p95 ≤ 2.4 cm | 09-14 / 09-22 |
 > | D0 — the tag gives a relative pose | ❌ 0–1.25 m at 640×480 → ✅ **0–2.5 m at 1280×960**, p95 ≤ 2.3 cm, ≤ 1.1° | 09-10 / 09-14 |
-> | H0 — hold over the pad by camera alone | ✅ 3/3 heights, hold p95 ≤ 2.8 cm, from takeoff 0.94 m off the pad | 09-15 |
-> | D1 — land on the static pad, 20 trials | ❌ 19/20 → ✅ **20/20**, touchdown error median 1.2 cm, max 2.7 cm (tolerance 10 cm) | 09-15 |
-> | D2 — chase baseline, land on the moving pad, 20 trials | ✅ **20/20 at 0.5 m/s**, touchdown error median 2.1 cm, max 4.2 cm, scored against the pad where it was at contact | 09-21 |
+> | H0 — hold over the pad by camera alone | ✅ 3/3 heights, hold p95 ≤ 2.8 cm | 09-15 |
+> | D1 — land on the static pad, 20 trials | ✅ **20/20**, touchdown error median 1.2 cm, max 2.7 cm (tolerance 10 cm) | 09-15 |
+> | D2 — chase baseline, land on the moving pad, 20 trials | ✅ **20/20 at 0.5 m/s**, median 2.1 cm, max 4.2 cm | 09-21 |
+> | D3 — chase vs coop | 🔄 rig built and checked (stage B passed); looks flown on line, sine, rounded square at 1.0 m/s | 10-05 / 10-06 |
 >
-> **What the faster pads showed (09-21 → 09-22).** At 1.0 and 1.5 m/s the chase baseline
-> aborted every trial, so before comparing anything the baseline was given a fair chance:
-> the "aligned" rule was rewritten for a moving pad (D1's stationary-pad rule was
-> unreachable at speed), and the pad estimate is now carried forward to the instant each
-> command is sent. Same controller for both strategies, so both fixes are fair to coop too.
-> The chase still docked **0/5** at both speeds — so the cause is real, not a rule.
+> **D3 looks, 1.0 m/s, 200 ms link, 6 trials each (docked):**
 >
-> **Then two new pad paths said what the cause is.** A straight **line** (keep up, never
-> turn) and a **sine wave** (keep up, turning constantly), six trials each at 1.0 m/s:
->
-> | Path | Docked at 1.0 m/s | Touchdown error |
+> | Path | Chase | Coop |
 > |---|---|---|
-> | line — no turns at all | ✅ **6/6**, no retries | median 2.2 cm, max 3.1 cm |
-> | rounded square — a corner every 5.6 s | ❌ 0/5 | — |
-> | sine — always turning, the turn always reversing | ❌ 0/6 | — |
+> | line (control: no turns) | 6/6 | 6/6 |
+> | sine (always turning, smoothly) | **0/6** | **3/6** (5/6 in an earlier look; misses 15-19 cm) |
+> | rounded square (a sudden corner every 5.6 s) | 0/6 | 0/6 at 200 ms; **3/6 at 0 ms** latency |
 >
-> **So the chase can keep up with a 1.0 m/s pad; what it cannot do is follow a turn.** On
-> the sine it sits ~30 cm off the pad, and ~27 cm of that is *sideways* — beside the pad,
-> not behind it. A camera-only estimate assumes the pad keeps going the way it was last
-> seen going, so it points the wrong way the moment the pad's heading changes.
+> **What got coop there.** The broadcast made coop's estimate of the pad's velocity ~5x more
+> accurate than chase's camera-only one, but that alone landed nothing: in every turn the
+> drone fell ~45 cm behind its own target, because PX4 was given position and velocity but no
+> acceleration. **Feeding forward the turn's acceleration** (turn rate × speed, known only to
+> coop) cut the drone's offset from ~47 to ~19 cm (p95) and gave the first coop landings. The
+> camera-only diagnosis from D2 (a wrong velocity estimate) turned out to be incomplete:
+> tracking lag dominated.
 >
-> **This is exactly the gap D3 is built to close**: the UGV's broadcast carries its heading
-> and turn rate as it turns, instead of the drone waiting to see it. The line path gives the
-> comparison an honest control — coop cannot claim credit there, because the chase already
-> lands 6/6. Still true: nothing is cooperative yet, and all of it is simulation. Results
-> and runbook: the code repo's
-> [`docking/`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/tree/main/docking), one folder per gate under
-> [`docking/gates/`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/tree/main/docking/gates).
+> **What still fails, and why.**
+> * **Every coop miss is the end of the descent running into a turn**: the drone touches down
+>   11-19 cm off. A first fix (hold the descent while the pad turns) did not work and is off.
+> * **The rounded square's corners are a step** (straight to 1 m/s² instantly). Coop hears of a
+>   corner ~0.35 s late at a 200 ms link, and PX4 cannot follow a step even then. At 0 ms coop
+>   docks 3/6, so a faster link helps but **knowing the pad's current motion is not enough**:
+>   the next step is the UGV sharing what it is *about* to do (intent), or agreeing to drive
+>   straight while the drone lands (a negotiated landing). Both are written up as a plan.
+> * **Found 2026-10-06: every D1-D3 descent ran at 0.2 m/s, not the 0.3 m/s the docs said.**
+>   PX4's simulator kept a slow-descent cap set during D0 in its saved parameters, and later
+>   runners never reset it. Recorded results stand as what the aircraft did; descriptions are
+>   corrected; the fix (set and record every flight parameter, every trial) is next.
+>
+> **Checked before any D3 number (stage B):** the chase baseline is unchanged with all the coop
+> code present (line 6/6, sine 0/6, as D2 measured); chase never heard the broadcast (12/12
+> trials, asserted per trial); coop at 0 ms can win (3/6 on the square). Code, results and the
+> full account are on the code repo's `d3-coop` branch:
+> [`DOCKING.md`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/blob/d3-coop/DOCKING.md) §4.1-4.4 (mechanism and plan),
+> [`docking/gates/d3/results/`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/tree/d3-coop/docking/gates/d3/results) (every run, with what it shows and
+> does not show), [`ISSUES.md`](https://github.com/csgomez25/UAV-UGV-docking-CodeStack/blob/d3-coop/ISSUES.md) section L (the parameter trap).
 
 > **GPS-denied layer status:** the aircraft flies with GNSS fusion off; nothing estimates
 > its pose yet. The perception→planning→flight loop closes in SITL on a map the
@@ -222,7 +232,7 @@ confirmed. Overall GPS-denied project ≈ **15%**; docking is now the active cri
 | **D0** | Tag relative pose in sim, checked against truth | Week 1 | 🔄 **flown 2026-09-14, PASS** at 1280×960, 0–2.5 m |
 | **D1** | Repeatable stationary-pad landing in sim | Week 2 | ✅ **flown 2026-09-15, 20/20** |
 | **D2** | UAV-only chase landing on a moving pad — the baseline | Weeks 3–4 | ✅ **flown 2026-09-21, 20/20 at 0.5 m/s**; characterised to 1.5 m/s and on 3 path shapes, 09-22 |
-| **D3** | Cooperative vs. chase, 20-trial matrix → **the Fall result** (December) | Weeks 5–6 | 0% |
+| **D3** | Cooperative vs. chase, 20-trial matrix → **the Fall result** (December) | Weeks 5–6 | 🔄 **~50%**: broadcaster, coop estimator, controller guard, scorer, runner built; stage B checks passed; looks flown (coop 3/6 vs chase 0/6 on the sine at 1.0 m/s). Scored cells not flown |
 | **D4** | Hardware: airframe flies repeatably; UGV holds a repeatable speed | Jan–Feb | 0% |
 | **D5** | Physical docking reproduces the sim numbers → C-UASC | Mar–Apr | 0% |
 | *stretch* | GPS-denied approach phase — the Blue Skies version, needs Gate A | — | — |
@@ -246,13 +256,16 @@ it to stand.
 
 1. ⬜ **First project meeting** with the three `docking/` docs. 
 2. ✅ **D2 done 2026-09-21** — the chase baseline lands on the moving pad, 20/20 at 0.5 m/s.
-3. ⬜ **D3 next** — `ugv_broadcaster` (latency, noise, dropout) and the cooperative controller,
-   then chase vs. coop at 1.0 and 1.5 m/s. **The baseline is now measured, not assumed:** at
-   1.0 m/s the chase lands 6/6 on a straight path and 0/6 on a turning one, so the number coop
-   has to beat is a docking rate on *turning* paths (rounded square, sine), with the line kept
-   as the control where both should succeed.
-4. ✅ **Write the evaluator's test before the first number.** Done for every gate through D2
-   (`check_<gate>_score.py`, synthetic runs with known verdicts). D3's needs its own.
+3. 🔄 **D3 in progress.** Built: `ugv_broadcaster`, the coop estimator, the controller's strategy
+   guard, acceleration feedforward, `d3_score.py` (+ its check, written first) and `run_d3.py`.
+   Stage B passed. Next, in order: (a) set and record every PX4 flight parameter in the runner
+   (`ISSUES.md` L1), then re-test a faster final descent on the line and the sine; (b) a
+   chase arm that estimates turn rate from the camera, so the comparison is fair; (c) the latency
+   sweep (stage C); (d) the scored 20-pair cells (stage D, ~13 h of sim).
+4. ✅ **Write the evaluator's test before the first number.** Done for every gate through D3
+   (`check_d3_score.py`: 13 trial cases + 8 pairing/cell checks).
+   ⬜ **Beyond D3 (plan, `DOCKING.md` §4.3):** L2 intent (the UGV shares its planned turn rate a
+   short time ahead) and L3 negotiated landing (the UGV holds a straight on request).
 5. ⬜ **Blue Skies NOI by Oct 12** if the backup is to stay live.
 6. ⬜ **C-UASC registration opens Nov 1.**
 
@@ -282,6 +295,8 @@ it to stand.
 
 | Date | Track | What happened |
 |---|---|---|
+| 2026-10-06 | docking | **D3 stages A and B flown, and a rig flaw found.** Stage B passed: chase baseline unchanged with the coop code present (line 6/6, sine 0/6), chase never heard the broadcast (12/12), coop at 0 ms docks the rounded square 3/6. Stage A (200 ms): coop sine 3/6, rounded square 0/6; chase rounded square 0/6. A turn gate on the descent failed and is off. **PX4's saved parameters had capped every D1-D3 descent at 0.2 m/s** (set during D0, never reset): results stand, descriptions corrected (`ISSUES.md` L1). The cooperation ladder (state → intent → negotiated landing) is written up as the plan beyond D3. |
+| 2026-10-05 | docking | **D3 wired and first flown.** Coop's camera frames were being dropped after each broadcast (a third of them); fixed with a replay buffer, chase unchanged. Estimator and controller take a strategy; the controller refuses to arm unless the broadcast topic matches it. First paired look: coop's velocity estimate ~5x better but **both** arms failed on the sine, ~45 cm behind their own target in every turn. **Acceleration feedforward** fixed that: coop then docked **5/6** on the sine (chase: 0/6 in D2). |
 | 2026-09-22 | docking | **The chase baseline was characterised past its gate speed, and its limit identified.** At 1.0 and 1.5 m/s it aborted every trial, so the moving-pad alignment rule and a stale-target bug were fixed first (both fair to coop, which shares the controller); it still docked 0/5 at both. Two new pad paths then separated the two possible causes: at 1.0 m/s the chase docks **6/6 on a straight line** (median 2.2 cm) and **0/6 on a sine wave**, sitting ~30 cm off the pad with ~27 cm of it sideways. **It can keep up; it cannot follow a turn** — which is the quantity D3's broadcast supplies. Pad paths re-checked 15/15 (M0). |
 | 2026-09-21 | docking | **Gate D2 passed: the chase baseline lands on the moving pad, 20/20 at 0.5 m/s**, touchdown error median 2.1 cm, max 4.2 cm. Every landing came after the pad's first corner, where the chase overshoots ~25 cm and pauses its descent. The code repo's `docking/` is now organized one folder per gate. |
 | 2026-09-15 | docking | **Weeks 1–2 done in sim.** At 1280×960 the tag pose holds to 2.5 m. The drone lands on the stationary pad by camera alone, 20/20 trials, touchdown error median 1.2 cm. |
