@@ -44,14 +44,15 @@ drone finds, holds over (p95 ≤ 2.8 cm) and **lands on the stationary pad by ca
 skid geometry beforehand (a first run was 19/20). The pad robot already drives circles and
 squares to within 1.7 cm. **Next: Week 3, the chase baseline on the moving pad.**
 
-**Weeks 3–6 status (2026-10-06):** in progress, in sim. Week 3 done: the chase baseline lands on
+**Weeks 3–6 status (2026-10-07):** in progress, in sim. Week 3 done: the chase baseline lands on
 the moving pad **20/20 at 0.5 m/s** (D2); at 1.0 m/s it lands 6/6 on a straight path and 0/6 on
 turning ones. Week 5's cooperative controller is built (UGV broadcast with latency/noise/dropout,
 fused into the pad estimate, plus acceleration feedforward), and the D3 scorer and runner exist,
-with the pre-checks passed. **First looks at 1.0 m/s, 200 ms link, 6 trials each: on the sine,
-coop docks 3/6 where chase docks 0/6**; both dock 6/6 on the line; a path with sudden corners
-defeats both (coop 3/6 only at 0 ms latency). Not yet the scored Week 6 table: 20-pair cells are
-next, after fixing a simulator setting that held every descent to 0.2 m/s. Detail: the main
+with the pre-checks passed. **Looks at 1.0 m/s, 200 ms link, 6 trials each (2026-10-07): coop
+docks 3/6 on the sine and 3/6 on the rounded square, where chase docks 0/6 on both**; both dock
+6/6 on the line. A simulator setting that had held every descent to 0.2 m/s is fixed, and the
+final drop is timed to the pad's turning. Not yet the scored Week 6 table: 20-pair cells are
+next. Detail: the main
 [`README.md`](../README.md) status block.
 
 **Full arc:** Weeks 1–6 sim → **December presentation** (mission + statistics). Jan–Feb: build
