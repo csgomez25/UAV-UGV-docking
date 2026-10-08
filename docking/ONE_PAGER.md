@@ -44,15 +44,14 @@ drone finds, holds over (p95 ≤ 2.8 cm) and **lands on the stationary pad by ca
 skid geometry beforehand (a first run was 19/20). The pad robot already drives circles and
 squares to within 1.7 cm. **Next: Week 3, the chase baseline on the moving pad.**
 
-**Weeks 3–6 status (2026-10-07):** in progress, in sim. Week 3 done: the chase baseline lands on
+**Weeks 3–6 status (2026-10-07, scored):** in progress, in sim. Week 3 done: the chase baseline lands on
 the moving pad **20/20 at 0.5 m/s** (D2); at 1.0 m/s it lands 6/6 on a straight path and 0/6 on
 turning ones. Week 5's cooperative controller is built (UGV broadcast with latency/noise/dropout,
 fused into the pad estimate, plus acceleration feedforward), and the D3 scorer and runner exist,
-with the pre-checks passed. **Looks at 1.0 m/s, 200 ms link, 6 trials each (2026-10-07): coop
-docks 3/6 on the sine and 3/6 on the rounded square, where chase docks 0/6 on both**; both dock
-6/6 on the line. A simulator setting that had held every descent to 0.2 m/s is fixed, and the
-final drop is timed to the pad's turning. Not yet the scored Week 6 table: 20-pair cells are
-next. Detail: the main
+with the pre-checks passed. **First scored cells (2026-10-07), 1.0 m/s, 200 ms link, 20 pairs
+each: coop docks 11/20 on the sine and 7/20 on the rounded square, where chase docks 0/20 on
+both** (exact McNemar p 0.001 and 0.016). The Week 6 table below is filled for 1.0 m/s; the
+higher speed is still to fly. Detail: the main
 [`README.md`](../README.md) status block.
 
 **Full arc:** Weeks 1–6 sim → **December presentation** (mission + statistics). Jan–Feb: build
@@ -64,10 +63,16 @@ flight Jun 4–6, 2027.
 At least **two control strategies** (UAV-only chase vs. cooperative) compared on the **same trajectory**, reported as **landing-error distributions** across the trial matrix — not one successful video.
 
 ## Data table expected by Week 6
-| Strategy | Platform speed (m/s) | Touchdown error (cm) | Success rate (%) | Settling time (s) |
+| Strategy | Path, platform speed | Touchdown error (cm, median of touchdowns) | Success rate (%) | Settling time (s, median, docked) |
 |----------|----------------------|----------------------|------------------|-------------------|
-| UAV-only chase | low / high | — | — | — |
-| Cooperative (velocity broadcast + fusion) | low / high | — | — | — |
+| UAV-only chase | sine, 1.0 m/s | — (never touched) | **0** (0/20) | — |
+| Cooperative (broadcast + fusion + feedforward) | sine, 1.0 m/s | **8.2** | **55** (11/20) | 27 |
+| UAV-only chase | rounded square, 1.0 m/s | 17.1 (10 touchdowns) | **0** (0/20) | — |
+| Cooperative | rounded square, 1.0 m/s | **5.9** (15 touchdowns) | **35** (7/20) | 65 |
+| both | higher speed (1.5 m/s) | not flown yet | | |
+
+*Filled 2026-10-07 from the D3 baseline (code repo, `docking/gates/d3/results/20261007_135910`): 200 ms
+link, 20 chase/coop pairs per cell. Settling time = pad starts moving to touchdown. Simulation.*
 
 ## Competition target + backup
 - **Primary — C-UASC 2027 (California).** Physical fly-off; rewards docking, computer vision, and autonomous mission systems. Registration opens **Nov 1, 2026**, closes **Feb 1, 2027**; design submission May 1; flight event **Jun 4–6, 2027**. Confirm CPP eligibility with organizers early.
