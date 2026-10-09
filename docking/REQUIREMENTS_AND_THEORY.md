@@ -1,6 +1,6 @@
 # Cooperative UAV–UGV Docking — Requirements, Parts & Theory
 
-**Project 2 · RSCL@CPP · Role: Autonomy**
+**Project 2 · RSCL@CPP**
 Minimum research platform — buy by function, not by catalog. Verify current models/prices before purchase.
 
 Companions: [`ONE_PAGER.md`](./ONE_PAGER.md) · [`FIRST_MEETING_PACKET.md`](./FIRST_MEETING_PACKET.md).

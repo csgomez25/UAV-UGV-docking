@@ -141,9 +141,9 @@ defensible deliverable via a **scope ladder** so the project can't fully fail.
 
 ## Team
 
-Expanding into a full senior-design
-team for the docking project. Current role split, interface contracts, and how the team
-scales as people join: [ROLES.md](./ROLES.md).
+The docking project is a team effort. The areas of work, the interfaces between them, and how
+to join one: [ROLES.md](./ROLES.md). Where the project stands and what comes next, for everyone:
+[docking/STATUS_AND_PLAN.md](./docking/STATUS_AND_PLAN.md).
 
 ---
 
@@ -154,8 +154,10 @@ scales as people join: [ROLES.md](./ROLES.md).
 | [docking/](./docking) | ⭐ **The current project** — one-pager, first-meeting packet, requirements/parts/theory |
 | [BUILD.md](./BUILD.md) | Locked technical decisions, frame/sensor/compute choices, BOM, weight math, risks |
 | [ROADMAP.md](./ROADMAP.md) | Learn-just-in-time roadmap + curated resources + the VIO development track |
-| [ROLES.md](./ROLES.md) | Team split, the data flow, and the interface contracts to nail |
-| [archive/](./archive) | Pre-pivot solo/summer-era logs (day-by-day sim bring-up, the original plan, the full GPS-denied status history) |
+| [docking/STATUS_AND_PLAN.md](./docking/STATUS_AND_PLAN.md) | **Start here.** The shared status and plan: question, approach, results, competitions, UGV, timeline, decisions |
+| [docking/REFERENCES.md](./docking/REFERENCES.md) | The three key papers, with open links and how they compare to our design |
+| [ROLES.md](./ROLES.md) | Areas of work, the data flow, and the interface contracts between them |
+| [archive/](./archive) | Pre-pivot summer-era logs (day-by-day sim bring-up, the original plan, the full GPS-denied status history) |
 
 **And in the code repo**, which moves faster than this one and wins on mechanism:
 
