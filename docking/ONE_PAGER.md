@@ -69,9 +69,11 @@ At least **two control strategies** (UAV-only chase vs. cooperative) compared on
 | Cooperative (broadcast + fusion + feedforward) | sine, 1.0 m/s | **8.2** | **55** (11/20) | 27 |
 | UAV-only chase | rounded square, 1.0 m/s | 17.1 (10 touchdowns) | **0** (0/20) | — |
 | Cooperative | rounded square, 1.0 m/s | **5.9** (15 touchdowns) | **35** (7/20) | 65 |
+| UAV-only chase | line (control), 1.0 m/s | 1.7 | **100** (19/19 valid) | 15 |
+| Cooperative | line (control), 1.0 m/s | 2.0 | **100** (20/20) | 16 |
 | both | higher speed (1.5 m/s) | not flown yet | | |
 
-*Filled 2026-10-07 from the D3 baseline (code repo, `docking/gates/d3/results/20261007_135910`): 200 ms
+*Filled 2026-10-07/08 from the D3 baseline (code repo, `docking/gates/d3/results/20261007_135910` and `20261008_142024` for the line): 200 ms
 link, 20 chase/coop pairs per cell. Settling time = pad starts moving to touchdown. Simulation.*
 
 ## Competition target + backup
