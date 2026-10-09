@@ -1,6 +1,6 @@
 # Drone Docking on a Moving UGV — First-Meeting One-Pager
 
-**Program:** Hybrid Autonomous Robotics · **Role:** Autonomy · **Term:** Fall 2026
+**Program:** Hybrid Autonomous Robotics · **Project 2, RSCL@CPP** · **Term:** Fall 2026
 
 Companions: [`FIRST_MEETING_PACKET.md`](./FIRST_MEETING_PACKET.md) (the six bring-items and the
 10-rule self-check) · [`REQUIREMENTS_AND_THEORY.md`](./REQUIREMENTS_AND_THEORY.md) (parts,
@@ -27,8 +27,8 @@ matrix runs in PX4 SITL + Gazebo, where ground truth is exact. Spring hardware e
 whether that result **transfers** — it reproduces the sim numbers on a real airframe and UGV,
 it does not replace them. Every plot says which of the two it is.
 
-## Six-week minimum prototype (simulation — mapped to what I already have)
-| Week | Task | Output | Reuses from my work |
+## Six-week minimum prototype (simulation — mapped to existing work)
+| Week | Task | Output | Builds on |
 |------|------|--------|---------------------|
 | 1 | UGV-sized pad with AprilTag in the moving-platform world; downward camera on the sim UAV; tag detection → relative pose | Working relative-pose read | PX4/ROS 2 Jazzy SITL stack, Gazebo model-overlay mechanism, TF bridge |
 | 2 | Repeatable **stationary-pad** autonomous landing | Baseline landing works | Offboard manager (heartbeat, arming, sim-time guard) |
@@ -85,7 +85,7 @@ navigation is the research/mission layer (the Blue Skies inspection story), neve
 of the docking result: docking takes relative pose from the fiducial, so it stands whether or
 not the VIO work is finished.
 
-## One risk that could kill the project + how I de-risk it
+## One risk that could kill the project + how we de-risk it
 **Risk:** the UGV effectively stops at the moment of landing, reducing the problem to a static-pad demo (the guide's explicit *DO NOT DO THIS*) — or the physical airframe isn't flight-ready in spring, leaving only sim results.
 **De-risk:** (1) hold platform speed non-zero through touchdown and log the platform's actual velocity at contact as evidence the target was moving; require the cooperative strategy to win *at speed*, not at rest. (2) Run the complete study in sim first, so a hardware slip still leaves a finished, clearly-labelled sim result and the Blue Skies backup intact — hardware then tests transfer rather than carrying the whole project.
 

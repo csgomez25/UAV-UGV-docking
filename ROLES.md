@@ -1,15 +1,13 @@
 # Team Roles & Interfaces
 
-> **Docking (2026-09-10 →):** see [Docking roles](#docking-roles-2026-09-10--proposed-confirm-at-the-first-meeting) directly below — confirm the assignment at the first project meeting.
+> **Docking (2026-09-10 →):** see [Docking roles](#docking-roles) directly below. Roles are
+> areas of work, not slots for a fixed number of people: anyone can join any area, several
+> people can share one, and assignments are agreed at team meetings.
 >
-> **GPS-denied phase (background):** the layer below describes how the original
-> 2-person team split the work — **State Estimation/VIO + autonomy-loop integration**
-> on one side, **hardware** on the other. It's kept as reference for anyone picking up
-> that track; the current docking assignment is what governs day to day.
->
-> **Team evolution:** the project started as **2 people** (software/autonomy + structural/
-> electrical) over summer 2026, and is growing into a full senior-design team for the
-> docking project — adding a planning teammate and a control teammate as the course starts.
+> **GPS-denied phase (background):** the layer further down describes how the summer work
+> on the GPS-denied stack was divided, between **state estimation/VIO + autonomy-loop
+> integration** and **hardware**. It is kept as reference for anyone picking up that track;
+> the docking roles are what governs day to day.
 >
 > This doc pins the **interface contracts** between roles — the seams are where modular teams succeed or bleed time.
 >
@@ -17,7 +15,7 @@
 
 ---
 
-## Docking roles (2026-09-10) — *proposed, confirm at the first meeting*
+## Docking roles
 
 The senior project is now cooperative UAV–UGV docking ([`docking/`](./docking)). The
 split below replaces the GPS-denied data flow for the critical path; the sections after it
@@ -40,7 +38,7 @@ still describe the GPS-denied layer.
 | **Flight control** | PX4 config, failsafes, kill switch, land/disarm behaviour on a moving pad | Reliable base flight (the scoring half of Rule 6) |
 | **Test / ground truth** | Sim worlds, the trial harness, touchdown-truth method, lab notebook | The distributions — and the evaluator's tests |
 
-With fewer people: UGV + hardware merge, and test folds into autonomy for the Fall sim study.
+Each area welcomes more than one person, and an area can be shared or handed over at any time. Status, results and the next technical steps for every area are in [`docking/STATUS_AND_PLAN.md`](./docking/STATUS_AND_PLAN.md).
 
 **Seams to write down before coding:**
 1. **UGV → autonomy:** the broadcast message, frame (ENU world vs. UGV body), rate, and
@@ -82,15 +80,15 @@ is the **integrator** who makes the whole chain work end-to-end.
 - **VIO / localization:** integrate + calibrate (Kalibr) + tune **cuVSLAM** on the RealSense; configure PX4 **EKF2** for GPS-denied / vision-aided; feed VIO odometry in; **characterize drift**.
 - **Autonomy-loop integration (software architect):** the ROS 2 workspace, node graph, TF tree, launch files, and — most importantly — **owning the message contracts** between every box. This is the person who makes localization → planning → control actually work as one loop on hardware.
 
-**Co-owns (shared, hands off as the team grows):**
-- **Planning + obstacle avoidance** — built in sim first, then handed to a planning teammate while staying the integration owner.
+**Co-owns (shared, can be handed off):**
+- **Planning + obstacle avoidance** — built in sim first, then shared with whoever owns planning, while integration stays with this role.
 
 **Learn:** ROADMAP.md's VIO development track (Labbe → OpenVINS/EuRoC → toy VI-EKF → Kalibr → cuVSLAM).
 **Produces:** reliable pose/odom + `map→base_link` TF. **Consumes:** sensor stream (from Hardware), and eventually a `nav_msgs/Path` from the planning role.
 
 ---
 
-## Hardware — Structural + Electrical  *(confirmed, from summer 2026)*
+## Hardware — Structural + Electrical
 
 **Owns — Mechanical:** X500 assembly; payload mounts (camera, Jetson tray, battery, prop guards); **vibration isolation for camera/IMU** — *the make-or-break detail; bad damping silently wrecks VIO*; cooling; weight budget; CAD for custom mounts (and the eventual custom-frame stretch).
 
@@ -101,7 +99,7 @@ is the **integrator** who makes the whole chain work end-to-end.
 
 ---
 
-## Planning & Obstacle Avoidance  *(joins as the team grows; co-owned, then handed off)*
+## Planning & Obstacle Avoidance
 
 **Owns:** nvblox occupancy/ESDF consumption → A*/D* planning → obstacle inflation → mid-flight replanning → `nav_msgs/Path` output. Inherits a working sim version as a starting point.
 **Consumes:** pose + TF + map (from Integration). **Produces:** collision-free `Path` (to Control).
@@ -117,10 +115,10 @@ is the **integrator** who makes the whole chain work end-to-end.
 
 ---
 
-## Test / Sim / Integration  *(a dedicated person, or shared)*
+## Test / Sim / Integration
 
 **Owns:** Gazebo worlds + obstacle courses; evaluation metrics (success rate, closest-approach margin, replan latency, drift); logging/analysis (ulog + rosbag + PlotJuggler); flight-test safety procedures; documentation.
-> If no dedicated person: sim worlds → Integration; metrics/logging → Control; safety procedures → Hardware.
+> If this area is shared: sim worlds → Integration; metrics/logging → Control; safety procedures → Hardware.
 
 ---
 
@@ -136,13 +134,10 @@ is the **integrator** who makes the whole chain work end-to-end.
 
 ---
 
-## Scaling the team
+## Sharing the work
 
-| Team size | Split |
-|---|---|
-| **Summer = 2** | **Software:** all software (VIO + planning + integration, in sim) · **Hardware:** assembly → manual flight → mounts/vibration. |
-| **Fall = 3** | **A:** VIO lead + integration (+ co-owns planning) · **B:** planning **+** control · **C:** hardware + test. |
-| **Fall = 4** | **A:** VIO lead + integration · **B:** planning · **C:** control · **D:** hardware (+ test folded in or a 5th person). |
+Roles are areas, not headcounts. Two rules hold however the team is divided:
 
-Merge *roles*, never blur *interfaces* — the contracts above hold at every size. The
-summer head-start means the software side can **lead** in the fall instead of scrambling.
+- **Merge roles if needed, never blur interfaces.** The contracts above hold whoever owns each side.
+- **Write the contract before the code.** Most integration pain is an undocumented frame
+  convention or topic mismatch at exactly these seams.

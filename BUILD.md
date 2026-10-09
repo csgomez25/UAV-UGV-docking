@@ -368,7 +368,7 @@ Rough all-up estimate with the Path A payload:
 
 **Resolved:** compute (Jetson Orin Nano), accelerator (none), sensor (D435i), ROS distro (Jazzy), frame (X500 V2). Autopilot leaning PX4, finalize in sim.
 
-**Team (known):** started as 2 people (one on software/autonomy, leading VIO + integration; one on structural + electrical) over summer 2026; growing to 3–4 for the senior-design team (add planning + control teammates). See [ROLES.md](./ROLES.md) and [archive/SUMMER.md](./archive/SUMMER.md).
+**Team:** the summer 2026 work covered software/autonomy (VIO + integration) and structural + electrical; the senior-design team now spans every area in [ROLES.md](./ROLES.md). Summer history: [archive/SUMMER.md](./archive/SUMMER.md).
 
 Still open:
 - [ ] **Verify** Orin Nano (not old Nano) + Isaac ROS Jazzy support matrix — see §0.5 ⚠️.

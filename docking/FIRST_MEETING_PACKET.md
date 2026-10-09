@@ -1,6 +1,6 @@
 # Drone Docking on a Moving UGV — First Project Meeting Packet
 
-**Project 2 · RSCL@CPP · Role: Autonomy · Fall 2026**
+**Project 2 · RSCL@CPP · Fall 2026**
 Built to the guide's 6 bring-items and the 10 No-Excuses Rules.
 
 Companions: [`ONE_PAGER.md`](./ONE_PAGER.md) (the same plan on one page, with what each week
