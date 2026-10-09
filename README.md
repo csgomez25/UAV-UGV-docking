@@ -24,16 +24,16 @@ notebook. The code and every result live in the code repository (see [Repositori
 > | H0 — hold over the pad by camera alone | ✅ 3/3 heights, hold p95 ≤ 2.8 cm | 09-15 |
 > | D1 — land on the static pad, 20 trials | ✅ **20/20**, touchdown error median 1.2 cm, max 2.7 cm (tolerance 10 cm) | 09-15 |
 > | D2 — chase baseline, land on the moving pad, 20 trials | ✅ **20/20 at 0.5 m/s**, median 2.1 cm, max 4.2 cm | 09-21 |
-> | D3 — chase vs coop | 🔄 **first scored cells: coop 11/20 vs chase 0/20 (sine), 7/20 vs 0/20 (rounded square)** at 1.0 m/s | 10-07 |
+> | D3 — chase vs coop | 🔄 **first scored cells: coop 11/20 vs chase 0/20 (sine), 7/20 vs 0/20 (rounded square), 20/20 vs 19/19 (line control)** at 1.0 m/s | 10-08 |
 >
-> **D3 baseline** (run `20261007_135910`, 20 chase/coop pairs per cell from the same seeded starts,
+> **D3 baseline, all three paths** (runs `20261007_135910` and `20261008_142024`, 20 chase/coop pairs per cell from the same seeded starts,
 > fresh seed never used for tuning, 200 ms noiseless link, 1.0 m/s):
 >
 > | Path | Chase docked | Coop docked | Paired: coop-only / chase-only | Exact McNemar p |
 > |---|---|---|---|---|
 > | sine (always turning, smoothly) | 0/20 (95% CI 0–16%) | **11/20** (34–74%) | 11 / 0 | **0.001** |
 > | rounded square (a sudden corner every 5.6 s) | 0/20 (0–16%) | **7/20** (18–57%) | 7 / 0 | **0.016** |
-> | line (control: no turns; 6-pair look) | 6/6 | 6/6 | — | — |
+> | line (control: no turns) | 19/19 valid (83–100%) | **20/20** (84–100%) | 0 / 0 | — (no discordant pairs) |
 >
 > In 40 pairs, chase never docked when coop failed. Coop touched down on all 20 sine trials
 > (median 8.2 cm off centre) and on 15 square trials (median 5.9 cm). **Its largest failure mode:

@@ -110,7 +110,7 @@ Two PX4 behaviours to design around:
 2b. ✅ Stationary-pad landing by camera alone — gate D1, **20/20** (2026-09-15); the pad robot drives its path (M0, 2026-09-14).
 3. ✅ Bridge the platform's odometry into ROS 2 through a latency/noise layer — the simulated UGV broadcast (`ugv_broadcaster`, built 2026-09-24: latency, jitter, noise, heading bias, bursty dropout).
 4. ✅ Build both controllers: (a) UAV-only chase (D2), (b) cooperative with the UGV broadcast fused into the pad estimate, plus **acceleration** feedforward from its turn rate (2026-10-05); velocity feedforward alone was not enough.
-5. 🔄 Run the 20-trial matrix in sim across ≥2 platform speeds → first version of the results table. *(First scored cells 2026-10-07 at 1.0 m/s, 20 pairs: coop 11/20 vs chase 0/20 on the sine, 7/20 vs 0/20 on the rounded square. The second speed is still to fly.)*
+5. 🔄 Run the 20-trial matrix in sim across ≥2 platform speeds → first version of the results table. *(First scored cells 2026-10-07 at 1.0 m/s, 20 pairs: coop 11/20 vs chase 0/20 on the sine, 7/20 vs 0/20 on the rounded square; 2026-10-08, the line control: coop 20/20, chase 19/19 valid. The second speed is still to fly.)*
 6. Only then buy hardware to validate the sim-proven result.
 
 ---

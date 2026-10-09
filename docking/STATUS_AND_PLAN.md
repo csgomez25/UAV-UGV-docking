@@ -75,7 +75,7 @@ Every gate through D2 has passed, and D3 has its first scored cells. All results
 | D2   | Can the chase baseline land on a moving pad?     | Pass: 20 of 20 at 0.5 m/s, median 2.1 cm                              |
 | D3   | Does cooperation help, at speed?                 | First scored cells below                                              |
 
-**D3 baseline** (run 20261007_135910): 1.0 m/s pad speed, 200 ms link, 20 paired trials per path, fresh start positions never used for tuning.
+**D3 baseline, all three paths** (runs 20261007_135910 for sine and rounded square, 20261008_142024 for the line): 1.0 m/s pad speed, 200 ms link, 20 paired trials per path, fresh start positions never used for tuning.
 
 | Path                                        | Chase docked        | Coop docked        | Coop docked, chase did not | Chase docked, coop did not | Exact McNemar p |
 |---------------------------------------------|---------------------|--------------------|----------------------------|----------------------------|-----------------|
