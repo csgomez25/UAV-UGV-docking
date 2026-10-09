@@ -39,8 +39,10 @@ See [Direction change](#direction-change--2026-09-10). Full pre-pivot history:
 >
 > In 40 pairs, chase never docked when coop failed. Coop touched down on all 20 sine trials
 > (median 8.2 cm off centre) and on 15 square trials (median 5.9 cm). **Its largest failure mode:
-> landing within tolerance and then coming off the deck at the next turn** (6 of 22 failures; on
-> the sine, 15/20 landings were within 10 cm at contact).
+> landing within tolerance, then skidding 3-10 cm in the ~0.35 s before the motors disarm** as the
+> pad turns beneath it, ending a centimetre over the deck edge (5 of 22 failures; on the sine,
+> 15/20 landings were within 10 cm at contact). The line control, flown to the same standard,
+> docks chase 19/19 and coop 20/20.
 >
 > **What got coop there.** The broadcast made coop's estimate of the pad's velocity ~5x more
 > accurate than chase's camera-only one, but that alone landed nothing: in every turn the
@@ -62,9 +64,11 @@ See [Direction change](#direction-change--2026-09-10). Full pre-pivot history:
 >   square from 0/6 to 3/6 and brought the sine's misses within 11-15 cm. A first version failed
 >   (it stalled mid-drop) and an earlier "hold during turns" gate failed too; both are recorded.
 >
-> **What still limits it** (from the baseline's failures). Six coop landings were within tolerance
-> and then the drone came off the pad at the next turn: keeping a landed drone on a turning pad is
-> now the largest single problem. Five sine landings missed by 0.6-2.3 cm: the final drop takes
+> **What still limits it** (from the baseline's failures, diagnosed 2026-10-08). Five coop landings
+> were within tolerance at contact, then skidded 3-10 cm in the third of a second before disarm,
+> while still armed with near-hover thrust, as the pad turned (correlation 0.87 with the pad's
+> turning); after disarm they did not move. Cutting thrust at contact is the fix, and a hardware
+> requirement too. One more landing was a real loss: touchdown was detected 2.5 s late. Five sine landings missed by 0.6-2.3 cm: the final drop takes
 > ~2.1 s, longer than the sine's quiet windows. On the square, 5 coop trials never touched and 6
 > landed 17-22 cm off: its corners are still hard at a 200 ms link.
 > Beyond D3, the planned next level of cooperation is the UGV sharing what it is *about* to do
@@ -311,8 +315,9 @@ it to stand.
 
 | Date | Track | What happened |
 |---|---|---|
-| 2026-10-07 | docking | **First scored D3 cells, now the moving baseline.** 20 chase/coop pairs per cell at 1.0 m/s, 200 ms, on a fresh seed: **sine coop 11/20 vs chase 0/20 (McNemar p 0.001); rounded square coop 7/20 vs 0/20 (p 0.016)**; both cells valid (80/80 flights). Chase never docked when coop failed. Coop's largest failure: landing within tolerance, then leaving the deck at the next turn. The runner gained checkpoints and `--resume`, tested by killing a run mid-flight. |
-| 2026-10-07 | docking | **Timed final drop: the rounded square docks at 200 ms.** With PX4's descent cap lifted (line 12/12, final 0.5 m 2.2 → 1.5 s) a faster final drop alone did not help the sine (coop 2/6). Timing it to the pad's turning did: v2 (start when the turn is gentle or easing, offset < 8 cm, drone at the hold height; never pause) gave coop **3/6 on the rounded square** (every earlier 200 ms run 0/6) and **3/6 on the sine** with misses 11-15 cm; chase 0/6 on both; line 6/6 both. v1 had stalled mid-drop (0/6). One good square landing then came off the pad at the next corner. Code PR merged to `main`. |
+| 2026-10-08 | docking | **Line control and the skid diagnosis.** The line, flown to the baseline's standard (20 pairs, seed 2), docks chase 19/19 valid and coop 20/20: without turns, sharing adds nothing, as predicted. The baseline's "off the deck" failures were diagnosed from its records: five skidded 3-10 cm in the ~0.35 s between contact and disarm as the pad turned, and ended a centimetre over the deck edge; one was a touchdown detected 2.5 s late. The planning repo became the team's shared starting point (status and plan, key references). |
+| 2026-10-07 | docking | **First scored D3 cells, now the moving baseline.** 20 chase/coop pairs per cell at 1.0 m/s, 200 ms, on a fresh seed: **sine coop 11/20 vs chase 0/20 (McNemar p 0.001); rounded square coop 7/20 vs 0/20 (p 0.016)**; both cells valid (80/80 flights). Chase never docked when coop failed. Coop's largest failure: landing within tolerance, then skidding off-centre before disarm (diagnosed 10-08). The runner gained checkpoints and `--resume`, tested by killing a run mid-flight. |
+| 2026-10-07 | docking | **Timed final drop: the rounded square docks at 200 ms.** With PX4's descent cap lifted (line 12/12, final 0.5 m 2.2 → 1.5 s) a faster final drop alone did not help the sine (coop 2/6). Timing it to the pad's turning did: v2 (start when the turn is gentle or easing, offset < 8 cm, drone at the hold height; never pause) gave coop **3/6 on the rounded square** (every earlier 200 ms run 0/6) and **3/6 on the sine** with misses 11-15 cm; chase 0/6 on both; line 6/6 both. v1 had stalled mid-drop (0/6). One good square landing then came off the pad (not diagnosed for that run; a similar baseline case was a late disarm). Code PR merged to `main`. |
 | 2026-10-06 | docking | **D3 stages A and B flown, and a rig flaw found.** Stage B passed: chase baseline unchanged with the coop code present (line 6/6, sine 0/6), chase never heard the broadcast (12/12), coop at 0 ms docks the rounded square 3/6. Stage A (200 ms): coop sine 3/6, rounded square 0/6; chase rounded square 0/6. A turn gate on the descent failed and is off. **PX4's saved parameters had capped every D1-D3 descent at 0.2 m/s** (set during D0, never reset): results stand, descriptions corrected (`ISSUES.md` L1). The cooperation ladder (state → intent → negotiated landing) is written up as the plan beyond D3. |
 | 2026-10-05 | docking | **D3 wired and first flown.** Coop's camera frames were being dropped after each broadcast (a third of them); fixed with a replay buffer, chase unchanged. Estimator and controller take a strategy; the controller refuses to arm unless the broadcast topic matches it. First paired look: coop's velocity estimate ~5x better but **both** arms failed on the sine, ~45 cm behind their own target in every turn. **Acceleration feedforward** fixed that: coop then docked **5/6** on the sine (chase: 0/6 in D2). |
 | 2026-09-22 | docking | **The chase baseline was characterised past its gate speed, and its limit identified.** At 1.0 and 1.5 m/s it aborted every trial, so the moving-pad alignment rule and a stale-target bug were fixed first (both fair to coop, which shares the controller); it still docked 0/5 at both. Two new pad paths then separated the two possible causes: at 1.0 m/s the chase docks **6/6 on a straight line** (median 2.2 cm) and **0/6 on a sine wave**, sitting ~30 cm off the pad with ~27 cm of it sideways. **It can keep up; it cannot follow a turn** — which is the quantity D3's broadcast supplies. Pad paths re-checked 15/15 (M0). |
