@@ -81,7 +81,7 @@ Every gate through D2 has passed, and D3 has its first scored cells. All results
 |---------------------------------------------|---------------------|--------------------|----------------------------|----------------------------|-----------------|
 | Sine (always turning, smoothly)             | 0/20 (95% CI 0–16%) | **11/20** (34–74%) | 11                         | 0                          | **0.001**       |
 | Rounded square (a sharp corner every 5.6 s) | 0/20 (0–16%)        | **7/20** (18–57%)  | 7                          | 0                          | **0.016**       |
-| Line (no turns; the control)                | 19/19 valid         | 20/20              | 0                          | 0                          | —               |
+| Line (no turns; the control, 20 pairs)      | 19/19 valid         | 20/20              | 0                          | 0                          | —               |
 
 In 40 pairs on turning paths, chase never docked when coop failed. On the line, where the camera alone is enough, both dock every time, so coop's advantage appears exactly where the hypothesis says it should: in turns. Coop touched down on all 20 sine trials (median 8.2 cm from centre) and on 15 square trials (median 5.9 cm).
 
