@@ -1,6 +1,6 @@
 # Cooperative UAV–UGV Docking: Status and Plan
 
-*Docking team · RSCL@CPP Project 2 · status as of October 8, 2026*
+*Docking team · RSCL@CPP Project 2 · status as of October 13, 2026*
 
 The shared overview of where the project stands, what it has shown so far, and what comes next: a starting point for everyone on the team. The detail behind every number lives in the code repository (see Sources).
 
@@ -10,9 +10,9 @@ When the ground robot shares its motion over a radio link, the drone lands on a 
 
 This is the project's moving baseline, not its final result. Everything so far is simulation (PX4 autopilot and Gazebo). The scored flights use GPS; nothing here claims GPS-denied flight. Hardware begins in January.
 
-Three decisions are needed now:
+The NASA Gateways to Blue Skies notice of intent is submitted. Three decisions are needed now:
 
-1.  **Submit the NASA Gateways to Blue Skies notice of intent by October 12.** It is non-binding and keeps the best-fitting competition open.
+1.  **Decide whether to enter NASA ORBIT as well.** Registration closes November 16; eligibility and the team roster need checking first (see Competitions).
 
 2.  **Confirm the ground robot:** reuse a lab platform (the AVL or IGVC robot) or buy or build one.
 
@@ -30,7 +30,7 @@ Three decisions are needed now:
 | Docking success                 | % of trials inside the 10 cm tolerance and resting fully on the deck | Primary    |
 | Maximum reliable platform speed | m/s                                                                  | Supporting |
 | Settling time                   | s, from the pad starting to move until touchdown                     | Supporting |
-| Disturbance tolerance           | latency, noise and dropout on the link                               | Supporting |
+| Disturbance tolerance           | a varying sideways force on the drone (N); link faults reported separately | Supporting |
 
 ## Approach
 
@@ -129,6 +129,10 @@ Each of these changed the design, and each was found by measurement rather than 
 
 For context, three competitions outside the RSCL list feature this exact problem but are out of reach this year: Maritime RobotX (drone and boat cooperation is mandatory; next reachable edition 2028), MBZIRC (ran landing on a moving car in 2017), and the ICUAS UAV Competition (simulation-first in ROS 2 and Gazebo; 2027 theme not yet announced; also a venue for a paper on this study).
 
+**Blue Skies calendar** (from the 2027 guidelines): questions for the first Q&A due Oct 20, 2026 · Q&A Nov 5 and Jan 27 · proposal, video and quad chart **Feb 22, 2027** · finalists notified Mar 22 · forum logistics Apr 23 · final paper and infographic May 10 · presentation deck May 20 · forum May 24–26. The guidelines do not allow any part of the proposal or video to be made by generative AI tools, so the team writes and draws the submission itself; the repositories supply the numbers behind it.
+
+**NASA ORBIT 2027 (open decision).** A second NASA competition the team may enter. Registration closes **Nov 16, 2026**; a short Phase 1 overview and the final track choice are due **Dec 14, 2026**. It has two tracks: Earth, built on a NASA patent or NASA software, and Space, which must address a NASA Civil Space Shortfall. A bridge-inspection concept alone does not qualify for either, so the entry needs a NASA technology or a shortfall behind it. To settle before registering: that Cal Poly Pomona is on the eligibility list the rules name, whether a student may be on both the Blue Skies and ORBIT teams, and which track fits.
+
 This pairing follows the RSCL guide's rules 6 and 7: competition scoring and research contribution can differ, and the team keeps one primary and one backup competition rather than chasing five.
 
 ## The UGV
@@ -158,6 +162,10 @@ The simulation work fits before mid-November, leaving two weeks for figures, vid
 
 ## Next steps and decisions
 
+**Drone and simulation plan (agreed October 13, 2026).** The goal for the drone side is the cooperative drone docking at 75% or better at both 1.0 and 1.5 m/s on several paths, in simulation, by mid-December. Landings are scored in two parts, where the drone touches and how far it slides afterwards, so the sliding distance and the holding force it implies can guide the choice of a latch or magnets on the UGV. The drone will start farther from a pad that is already moving, the UGV will announce each turn half a second ahead, and a seeded random path will stand in for a UGV that drives reactively. Recovery after an aborted landing and gusts on the drone follow once the 75% mark is met. The detailed steps are in the code repository's `DRONE_SIM_PLAN.md`.
+
+**What the UGV side can plan around:** the drone side needs only three things from the UGV: its true position (in simulation, for scoring), its broadcast of speed, heading and turn rate, and the deck's size. A UGV model with real physics can replace the current moving pad behind that contract.
+
 **Technical work, each change flown on the same cells and compared against the baseline:**
 
 1.  Cut thrust at contact, to stop the skid between touchdown and disarm (coop's largest failure mode).
@@ -178,7 +186,8 @@ The simulation work fits before mid-November, leaving two weeks for figures, vid
 
 | Decision                                                                                                                   | Who                | By                                     |
 |----------------------------------------------------------------------------------------------------------------------------|--------------------|----------------------------------------|
-| Submit the Blue Skies notice of intent, and decide who is named on the entry (the competition allows 2–6 students per team, at least 2 US citizens or permanent residents) | Team and professor | Oct 12, 2026 |
+| ~~Submit the Blue Skies notice of intent~~ **Done.** Still open: who is named on the entry (2–6 students per team, at least 2 US citizens or permanent residents) | Team and professor | Before Feb 22, 2027 |
+| Enter NASA ORBIT or not: check eligibility and the roster rule, then pick a track | Team and professor | Nov 16, 2026 (register); Dec 14 (track) |
 | Set the date of the December presentation                                                                                  | Professor          | As soon as possible                    |
 | Confirm whether the AVL or IGVC robot is available as the UGV                                                              | Professor and lab  | Before December                        |
 | Choose the ground-truth method for hardware (motion capture, overhead camera, or RTK GPS)                                  | Team and professor | Before December                        |

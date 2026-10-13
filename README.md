@@ -128,7 +128,7 @@ it to stand.
    (`check_d3_score.py`: 13 trial cases + 8 pairing/cell checks).
    ⬜ **Beyond D3 (plan, `DOCKING.md` §4.3):** L2 intent (the UGV shares its planned turn rate a
    short time ahead) and L3 negotiated landing (the UGV holds a straight on request).
-5. ⬜ **Blue Skies notice of intent by Oct 12**, the primary competition (non-binding; it keeps the entry open).
+5. ✅ **Blue Skies notice of intent submitted**, the primary competition. ⬜ **NASA ORBIT:** decide by Nov 16 (registration), after checking eligibility and the roster rule.
 6. ⬜ **C-UASC registration opens Nov 1** (closes Feb 1): decide whether to enter the airframe; every pilot needs AMA membership.
 
 ## Competitions
