@@ -154,6 +154,7 @@ to join one: [ROLES.md](./ROLES.md).
 | Doc | What it's for |
 |---|---|
 | [docking/STATUS_AND_PLAN.md](./docking/STATUS_AND_PLAN.md) | ⭐ **Start here.** The shared status and plan |
+| [docking/DRONE_SIM_PLAN.md](./docking/DRONE_SIM_PLAN.md) | The drone and simulation plan through mid-December: goal, how a landing is judged, the steps, and what the rest of the team can count on |
 | [docking/ONE_PAGER.md](./docking/ONE_PAGER.md) | The project on one page: title, hypothesis, metrics, schedule, the Week 6 data table |
 | [docking/FIRST_MEETING_PACKET.md](./docking/FIRST_MEETING_PACKET.md) | The RSCL guide's bring-items and the 10-rule self-check |
 | [docking/REQUIREMENTS_AND_THEORY.md](./docking/REQUIREMENTS_AND_THEORY.md) | Parts, ground truth, the theory checklist, the simulation gaps |
