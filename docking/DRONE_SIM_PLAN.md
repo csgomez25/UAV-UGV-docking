@@ -61,6 +61,7 @@ The preview means the UGV decides each turn half a second before making it. That
 | # | Step | Status |
 |---|---|---|
 | 1 | One command that runs every automated check, run automatically on every change | ✅ Done October 13 |
+| 1.5 | Make the test runs reliable, and fix the bugs a full code review found | ✅ Done October 16 |
 | 2 | Judge touchdown and slide separately, and re-score the existing results | Next |
 | 3 | Split the landing logic from the autopilot interface, and write a one-page card for each subsystem | |
 | 4 | Stop the slide after touchdown, move to the new start, and fly a new 1.0 m/s baseline | |
@@ -71,6 +72,8 @@ The preview means the UGV decides each turn half a second before making it. That
 | 9 | Recovery after an aborted landing: one more attempt, then ask the UGV to stop | |
 | 10 | Gusts: a sideways push on the drone that varies in strength and direction, flown once the 75% mark is met | |
 | 11 | A fairer camera-only baseline that estimates the turn from the camera, then the final run | |
+
+**About step 1.5.** Before building more, every part of the drone code was reviewed, and the bugs that could make a result wrong or stop a long test run were fixed, each with an automated check that proves it. A test run now survives a lost message to the autopilot, a simulator that will not shut down, or an interruption, and picks up where it stopped. A landing the drone refused to attempt because the test was set up wrong is no longer counted as a failed landing. None of the published results changed. The automated checks went from 12 to 18.
 
 If time runs short, the 40-pair final goes first, then the gust flights, then the fairer baseline. Steps 2, 3, 4, 6 and the 1.0 and 1.5 m/s tests are never cut.
 
