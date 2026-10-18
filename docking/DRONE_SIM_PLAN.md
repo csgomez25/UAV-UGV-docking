@@ -62,8 +62,8 @@ The preview means the UGV decides each turn half a second before making it. That
 |---|---|---|
 | 1 | One command that runs every automated check, run automatically on every change | ✅ Done October 13 |
 | 1.5 | Make the test runs reliable, and fix the bugs a full code review found | ✅ Done October 16 |
-| 2 | Judge touchdown and slide separately, and re-score the existing results | Next |
-| 3 | Split the landing logic from the autopilot interface, and write a one-page card for each subsystem | |
+| 2 | Judge touchdown and slide separately, and re-score the existing results | ✅ Done October 16 |
+| 3 | Split the landing logic from the autopilot interface, and write a one-page card for each subsystem |Next |
 | 4 | Stop the slide after touchdown, move to the new start, and fly a new 1.0 m/s baseline | |
 | 5 | A shorter final drop onto the pad | |
 | 6 | The half-second preview from the UGV | |
