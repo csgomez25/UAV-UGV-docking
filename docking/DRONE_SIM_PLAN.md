@@ -63,8 +63,8 @@ The preview means the UGV decides each turn half a second before making it. That
 | 1 | One command that runs every automated check, run automatically on every change | ✅ Done October 13 |
 | 1.5 | Make the test runs reliable, and fix the bugs a full code review found | ✅ Done October 16 |
 | 2 | Judge touchdown and slide separately, and re-score the existing results | ✅ Done October 16 |
-| 3 | Split the landing logic from the autopilot interface, and write a one-page card for each subsystem |Next |
-| 4 | Stop the slide after touchdown, move to the new start, and fly a new 1.0 m/s baseline | |
+| 3 | Split the landing logic from the autopilot interface, and write a one-page card for each subsystem | ✅ Done October 27 |
+| 4 | Stop the slide after touchdown, move to the new start, and fly a new 1.0 m/s baseline | Next |
 | 5 | A shorter final drop onto the pad | |
 | 6 | The half-second preview from the UGV | |
 | 7 | The random path | |
@@ -94,7 +94,7 @@ Work the UGV, electronics and docking-mechanism areas can pick up:
 - **Announcing turns:** the UGV committing to each turn half a second ahead and broadcasting it.
 - **Latch or electromagnet:** sized from the slide distance and holding force that step 2 reports.
 
-Each subsystem will have a short card (step 3) stating what it does, what goes in and out with units, how to test it alone, and its known limits, so pieces can be built and connected without reading each other's code.
+Each subsystem has a short card (step 3, `SUBSYSTEMS.md` in the code repository) stating what it does, what goes in and out with units, how to test it alone, and its known limits, so pieces can be built and connected without reading each other's code.
 
 ## Not this fall
 
