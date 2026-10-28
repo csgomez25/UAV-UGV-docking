@@ -64,7 +64,7 @@ The preview means the UGV decides each turn half a second before making it. That
 | 1.5 | Make the test runs reliable, and fix the bugs a full code review found | ✅ Done October 16 |
 | 2 | Judge touchdown and slide separately, and re-score the existing results | ✅ Done October 16 |
 | 3 | Split the landing logic from the autopilot interface, and write a one-page card for each subsystem | ✅ Done October 27 |
-| 4 | Stop the slide after touchdown, move to the new start, and fly a new 1.0 m/s baseline | Code done October 27 (slide fix, new start); the 1.0 m/s baseline is next |
+| 4 | Stop the slide after touchdown, move to the new start, and fly a new 1.0 m/s baseline | Code done October 28: slide fix, new start, filter re-tuned, 360 s flight limit, 3 tries per flight. Next: a coop latency sweep (25-200 ms), then the 1.0 m/s baseline |
 | 5 | A shorter final drop onto the pad | |
 | 6 | The half-second preview from the UGV | |
 | 7 | The random path | |
