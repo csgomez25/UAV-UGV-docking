@@ -145,14 +145,26 @@ The ground robot must reproduce what the simulated pad does, so the scored compa
 | Speed accuracy | within ±5% or ±0.05 m/s                                                                         | the simulated pad's M0 limits                                |
 | Path following | position error within 5 cm (95th percentile) on line, sine and rounded square                   | M0 limits                                                    |
 | Turning        | yaw rate up to ~1 rad/s, sideways acceleration ~1 m/s²                                          | the rounded square's corners                                 |
-| Deck           | 0.6 × 0.6 m, flat and rigid, ~0.3 m high, tilt within 2°, grippy surface, matte AprilTag bundle | the simulated pad                                            |
+| Deck           | 0.6 × 0.6 m, flat and rigid, ~0.25 m high, tilt within 2°, grippy surface, matte AprilTag bundle | the simulated pad (0.25 m since October 29, to match the tank below) |
 | Broadcast      | speed, heading and turn rate at 20 Hz or more, latency as low as possible, never position       | the coop design; latency was the main limit on sharp corners |
 | Ground truth   | motion capture, overhead camera with markers, or RTK GPS on both vehicles                       | needed to score any hardware landing                         |
 | Safety         | wireless hardware e-stop, remote-control override, speed limit                                  | required before any drone flies over it                      |
 
 **Build options:** reuse a lab robot (the AVL or IGVC platform, if available: free and fastest), buy a research rover (for example a Clearpath Jackal or AgileX Scout Mini: thousands of dollars), or build a skid-steer with encoder motors and a closed-loop motor controller (roughly $800–2,000 in parts, most team time). Prices are rough and must be checked.
 
-**How autonomous it needs to be.** "UGV" means unmanned, not necessarily autonomous. The scored comparison needs **repeatable pad motion**, which a human driver cannot give, so the UGV must follow its line, sine and rounded-square paths by itself from its own encoders and IMU. That is scripted path following, not full navigation. Remote control and an e-stop stay available at all times for bring-up and safety. Full reactive autonomy (Nav2 around obstacles) is a stretch goal; it enables the campus-driving story and the "intent" idea below. No competition on our list requires a ground vehicle.
+**The robot we have (measured October 29, 2026).** A tracked aluminium tank chassis with sprung road wheels; the old slide rail and gantry come off and the deck goes on top of the frame.
+
+| Item | Measured or seen | What it means |
+|---|---|---|
+| Frame | 17 × 16 in (43 × 41 cm), 8 in tall, aluminium bars, no top | The 0.6 m deck overhangs it by about 9 cm a side |
+| Tracks | 22 in long (56 cm), 13 in tread to tread (33 cm); 5 in from the bottom of the tread to the top of the box | The deck is wider than the tracks; keep it light and centred |
+| Deck | at least 0.6 × 0.6 m, about 10 in (0.25 m) off the ground once mounted | Matches the simulated deck (moved to 0.25 m to match). Tipping: at about 0.1 g in the sharpest corners, the margin is roughly 8-10× (rough estimate, centre of gravity assumed 0.15-0.2 m) |
+| Motors | 4 DC gear motors, each with a **magnetic Hall encoder** on the back (6-wire plug: motor ±, encoder power, ground, A, B) | Each track's speed can be measured: this covers the broadcast's speed |
+| Motor drivers | 2 dual H-bridge boards (red; look like L298N-type, to confirm) | Skid-steer: one side faster than the other to turn. An L298N loses ~2 V, which lowers top speed; a MOSFET driver (TB6612, BTS7960) is a cheap upgrade if speed falls short |
+
+**Still needed:** an **IMU** (gyro) for the turn rate and heading, since tracks slip in turns and the encoders read wrong exactly there; closed-loop speed control on the encoders. **To measure:** top speed (time 5 m at full power) and spin rate (time one turn in place), which decide whether the 1.0 and 1.5 m/s cells match this robot; the motors' gear ratio and encoder counts per turn (motor label), to turn counts into speed; the deck height once mounted.
+
+ "UGV" means unmanned, not necessarily autonomous. The scored comparison needs **repeatable pad motion**, which a human driver cannot give, so the UGV must follow its line, sine and rounded-square paths by itself from its own encoders and IMU. That is scripted path following, not full navigation. Remote control and an e-stop stay available at all times for bring-up and safety. Full reactive autonomy (Nav2 around obstacles) is a stretch goal; it enables the campus-driving story and the "intent" idea below. No competition on our list requires a ground vehicle.
 
 ## Timeline
 
