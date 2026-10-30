@@ -85,7 +85,7 @@ Every gate through D2 has passed, and D3 has its first scored cells. All results
 
 In 40 pairs on turning paths, chase never docked when coop failed. On the line, where the camera alone is enough, both dock every time, so coop's advantage appears exactly where the hypothesis says it should: in turns. Coop touched down on all 20 sine trials (median 8.2 cm from centre) and on 15 square trials (median 5.9 cm).
 
-**Coop baseline, October 29** (run 20261029_211440, coop only, 20 trials per path, same speed, link and start positions; after the lower 0.25 m wait before the final drop, the 0.25 m deck, and the climb-back fixes). Chase was not flown this time, so there is no paired comparison yet.
+**Coop baseline, October 29** (run 20261029_211440, coop only, 20 trials per path, same speed, link and start positions; after the lower 0.25 m wait before the final drop, the 0.25 m deck, and the climb-back fixes). Chase was then flown from the same start positions at the same code (October 30), giving full paired D3 cells (below).
 
 | Path | Coop docked | Median / largest miss from centre | Was (October 7/8) |
 |---|---|---|---|
@@ -101,6 +101,16 @@ In 40 pairs on turning paths, chase never docked when coop failed. On the line, 
 | Square 06 | Drop began 0.7 s before a corner; landed in it (after 2 climb-backs) | 7.4 cm behind, 8.6 cm outside: 11.4 cm | 18 cm off, on the deck |
 | Square 12 | Same, first try | 6.3 cm behind, 9.6 cm outside: 11.5 cm | 17.5 cm off, on the deck |
 | Square 05 | Pushed more than 20 cm off in 3 corners in a row (0.72 m, mid-drop at 0.14 m, 0.69 m); out of tries, so it aborted | never touched | hovering 2.1 m above the pad, following it, 11 cm off centre |
+
+**Paired D3 cells, October 30** (run 20261029_211440_paired; the one simulator-fault coop flight was re-flown and docked at 5.4 cm). Every cell passes.
+
+| Path | Chase docked | Coop docked | Coop docked, chase did not | Chase docked, coop did not | Exact McNemar p |
+|---|---|---|---|---|---|
+| Sine | 0/20 | **18/20** | 18 | 0 | **0.0000076** |
+| Rounded square | 0/20 | **17/20** | 17 | 0 | **0.000015** |
+| Line (control) | 20/20 | 20/20 | 0 | 0 | 1 |
+
+Chase never touched the pad on a turning path (all 40 flights ran out of tries), but docked every time on the line. Before the October fixes this was 11 vs 0 on the sine and 7 vs 0 on the square.
 
 No drone left the deck. The estimate of where the pad is stays good; the misses are the pad turning during the last ~1.2 s fall. The next step is to let the robot announce its upcoming turns so the drone does not start the drop into a corner.
 
