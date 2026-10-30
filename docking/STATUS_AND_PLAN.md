@@ -192,7 +192,9 @@ The ground robot must reproduce what the simulated pad does, so the scored compa
 | Tracks | 22 in long (56 cm), 13 in tread to tread (33 cm); 5 in from the bottom of the tread to the top of the box | The deck is wider than the tracks; keep it light and centred |
 | Deck | at least 0.6 × 0.6 m, about 10 in (0.25 m) off the ground once mounted | Matches the simulated deck (moved to 0.25 m to match). Tipping: at about 0.1 g in the sharpest corners, the margin is roughly 8-10× (rough estimate, centre of gravity assumed 0.15-0.2 m) |
 | Motors | 4 DC gear motors, each with a **magnetic Hall encoder** on the back (6-wire plug: motor ±, encoder power, ground, A, B) | Each track's speed can be measured: this covers the broadcast's speed |
-| Motor drivers | 2 dual H-bridge boards (red; look like L298N-type, to confirm) | Skid-steer: one side faster than the other to turn. An L298N loses ~2 V, which lowers top speed; a MOSFET driver (TB6612, BTS7960) is a cheap upgrade if speed falls short |
+| Motor drivers | 2 dual H-bridge boards: **L298N** (Envistia Mall, confirmed October 30), driven by an **Arduino Uno R3**. Both are for bench tests; the upgrade is in [HARDWARE_BRINGUP.md](./HARDWARE_BRINGUP.md) | Skid-steer: one side faster than the other to turn. An L298N loses ~2 V, which lowers top speed; a MOSFET driver (TB6612, BTS7960) is a cheap upgrade if speed falls short |
+
+**Bring-up plan (October 30):** [HARDWARE_BRINGUP.md](./HARDWARE_BRINGUP.md) has the parts, the stages U0-U8 with pass criteria, the week-by-week schedule, and the field radio links (no Wi-Fi in the field). The drone has a Pixhawk 6.
 
 **Still needed:** an **IMU** (gyro) for the turn rate and heading, since tracks slip in turns and the encoders read wrong exactly there; closed-loop speed control on the encoders. **To measure:** top speed (time 5 m at full power) and spin rate (time one turn in place), which decide whether the 1.0 and 1.5 m/s cells match this robot; the motors' gear ratio and encoder counts per turn (motor label), to turn counts into speed; the deck height once mounted.
 
