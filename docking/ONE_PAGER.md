@@ -50,7 +50,7 @@ turning ones. Week 5's cooperative controller is built (UGV broadcast with laten
 fused into the pad estimate, plus acceleration feedforward), and the D3 scorer and runner exist,
 with the pre-checks passed. **First scored cells (2026-10-07), 1.0 m/s, 200 ms link, 20 pairs
 each: coop docks 11/20 on the sine and 7/20 on the rounded square, where chase docks 0/20 on
-both** (exact McNemar p 0.001 and 0.016). The Week 6 table below is filled for 1.0 m/s; the
+both** (exact McNemar p 0.001 and 0.016). The Week 6 table below is filled for 1.0 m/s with the **2026-10-30 baseline: coop 18/20 (sine) and 17/20 (rounded square), chase 0/20 on both (p 0.0000076 and 0.000015)**; the
 higher speed is still to fly. Detail: the main
 [`README.md`](../README.md) status block.
 
@@ -65,12 +65,13 @@ At least **two control strategies** (UAV-only chase vs. cooperative) compared on
 ## Data table expected by Week 6
 | Strategy | Path, platform speed | Touchdown error (cm, median of touchdowns) | Success rate (%) | Settling time (s, median, docked) |
 |----------|----------------------|----------------------|------------------|-------------------|
-| UAV-only chase | sine, 1.0 m/s | — (never touched) | **0** (0/20) | — |
-| Cooperative (broadcast + fusion + feedforward) | sine, 1.0 m/s | **8.2** | **55** (11/20) | 27 |
-| UAV-only chase | rounded square, 1.0 m/s | 17.1 (10 touchdowns) | **0** (0/20) | — |
-| Cooperative | rounded square, 1.0 m/s | **5.9** (15 touchdowns) | **35** (7/20) | 65 |
-| UAV-only chase | line (control), 1.0 m/s | 1.7 | **100** (19/19 valid) | 15 |
-| Cooperative | line (control), 1.0 m/s | 2.0 | **100** (20/20) | 16 |
+| UAV-only chase | sine, 1.0 m/s (Oct 30) | — (never touched) | **0** (0/20) | — |
+| Cooperative (broadcast + fusion + feedforward) | sine, 1.0 m/s (Oct 30) | **3.8** | **90** (18/20) | 31 |
+| UAV-only chase | rounded square, 1.0 m/s (Oct 30) | — (never touched) | **0** (0/20) | — |
+| Cooperative | rounded square, 1.0 m/s (Oct 30) | **5.4** (19 touchdowns) | **85** (17/20) | 70 |
+| UAV-only chase | line (control), 1.0 m/s (Oct 30) | 1.7 | **100** (20/20) | 15 |
+| Cooperative | line (control), 1.0 m/s (Oct 30) | 1.2 | **100** (20/20) | 15 |
+| *Was, Oct 7/8* | sine / rounded square / line | coop 8.2 / 5.9 / 2.0; chase — / 17.1 / 1.7 | coop 55 / 35 / 100; chase 0 / 0 / 100 | coop 27 / 65 / 16 |
 | both | higher speed (1.5 m/s) | not flown yet | | |
 
 *Filled 2026-10-07/08 from the D3 baseline (code repo, `docking/gates/d3/results/20261007_135910` and `20261008_142024` for the line): 200 ms

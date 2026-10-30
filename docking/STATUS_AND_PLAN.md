@@ -1,12 +1,12 @@
 # Cooperative UAV–UGV Docking: Status and Plan
 
-*Docking team · RSCL@CPP Project 2 · status as of October 13, 2026*
+*Docking team · RSCL@CPP Project 2 · status as of October 30, 2026*
 
 The shared overview of where the project stands, what it has shown so far, and what comes next: a starting point for everyone on the team. The detail behind every number lives in the code repository (see Sources).
 
 ## Summary
 
-When the ground robot shares its motion over a radio link, the drone lands on a turning pad that a camera-only drone never lands on. In the first scored test (simulation, 1.0 m/s, 20 paired trials per path), the cooperative drone docked **11 of 20 times on a constantly turning path and 7 of 20 on a path with sharp corners; the camera-only drone docked 0 of 20 on both.** Both differences are statistically significant (exact McNemar test, p = 0.001 and p = 0.016).
+When the ground robot shares its motion over a radio link, the drone lands on a turning pad that a camera-only drone never lands on. In the latest scored test (October 30, simulation, 1.0 m/s, 20 paired trials per path), the cooperative drone docked **18 of 20 times on a constantly turning path and 17 of 20 on a path with sharp corners; the camera-only drone docked 0 of 20 on both** (exact McNemar test, p = 0.0000076 and p = 0.000015). The first scored test (October 7/8) was 11 and 7 of 20 against 0.
 
 This is the project's moving baseline, not its final result. Everything so far is simulation (PX4 autopilot and Gazebo). The scored flights use GPS; nothing here claims GPS-denied flight. Hardware begins in January.
 
@@ -73,17 +73,20 @@ Every gate through D2 has passed, and D3 has its first scored cells. All results
 | H0   | Can the drone hold over the pad by camera alone? | Pass: hold p95 within 2.8 cm at three heights                         |
 | D1   | Can it land on a static pad, repeatably?         | Pass: 20 of 20, touchdown error median 1.2 cm, max 2.7 cm             |
 | D2   | Can the chase baseline land on a moving pad?     | Pass: 20 of 20 at 0.5 m/s, median 2.1 cm                              |
-| D3   | Does cooperation help, at speed?                 | First scored cells below                                              |
+| D3   | Does cooperation help, at speed?                 | Yes at 1.0 m/s: coop 18/20 and 17/20 vs chase 0/20 on turning paths (Oct 30) |
 
 **D3 baseline, all three paths** (runs 20261007_135910 for sine and rounded square, 20261008_142024 for the line): 1.0 m/s pad speed, 200 ms link, 20 paired trials per path, fresh start positions never used for tuning.
 
-| Path                                        | Chase docked        | Coop docked        | Coop docked, chase did not | Chase docked, coop did not | Exact McNemar p |
-|---------------------------------------------|---------------------|--------------------|----------------------------|----------------------------|-----------------|
-| Sine (always turning, smoothly)             | 0/20 (95% CI 0–16%) | **11/20** (34–74%) | 11                         | 0                          | **0.001**       |
-| Rounded square (a sharp corner every 5.6 s) | 0/20 (0–16%)        | **7/20** (18–57%)  | 7                          | 0                          | **0.016**       |
-| Line (no turns; the control, 20 pairs)      | 19/19 valid         | 20/20              | 0                          | 0                          | —               |
+| Date (run) | Path | Chase docked | Coop docked | Coop docked, chase did not | Chase docked, coop did not | Exact McNemar p |
+|---|---|---|---|---|---|---|
+| **Oct 30, 2026** (20261029_211440_paired) | Sine (always turning, smoothly) | 0/20 (95% CI 0–16%) | **18/20** (70–97%) | 18 | 0 | **0.0000076** |
+| **Oct 30, 2026** | Rounded square (a sharp corner every 5.6 s) | 0/20 (0–16%) | **17/20** (64–95%) | 17 | 0 | **0.000015** |
+| **Oct 30, 2026** | Line (no turns; the control) | 20/20 (84–100%) | 20/20 (84–100%) | 0 | 0 | 1 |
+| Oct 7/8, 2026 (20261007_135910, 20261008_142024) | Sine | 0/20 (0–16%) | 11/20 (34–74%) | 11 | 0 | 0.001 |
+| Oct 7/8, 2026 | Rounded square | 0/20 (0–16%) | 7/20 (18–57%) | 7 | 0 | 0.016 |
+| Oct 7/8, 2026 | Line | 19/19 valid | 20/20 | 0 | 0 | — |
 
-In 40 pairs on turning paths, chase never docked when coop failed. On the line, where the camera alone is enough, both dock every time, so coop's advantage appears exactly where the hypothesis says it should: in turns. Coop touched down on all 20 sine trials (median 8.2 cm from centre) and on 15 square trials (median 5.9 cm).
+In both baselines, chase never docked when coop failed. On the line, where the camera alone is enough, both dock every time, so coop's advantage appears exactly where the hypothesis says it should: in turns. On October 30 coop's median miss was 3.8 cm on the sine and 5.4 cm on the square (October 7/8: 8.2 and 5.9 cm, on 20 and 15 touchdowns).
 
 **Coop baseline, October 29** (run 20261029_211440, coop only, 20 trials per path, same speed, link and start positions; after the lower 0.25 m wait before the final drop, the 0.25 m deck, and the climb-back fixes). Chase was then flown from the same start positions at the same code (October 30), giving full paired D3 cells (below).
 

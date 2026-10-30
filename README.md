@@ -12,9 +12,9 @@ notebook. The code and every result live in the code repository (see [Repositori
 
 ## Status
 
-> **Docking status (2026-10-07): D3 has its first scored result. On both turning paths, coop
-> docks where chase never does, and the difference is beyond chance: 11/20 vs 0/20 on the sine,
-> 7/20 vs 0/20 on the rounded square, 1.0 m/s, 200 ms link. All in sim. This is the moving
+> **Docking status (2026-10-30): the new paired D3 baseline. On both turning paths, coop
+> docks where chase never does, and the difference is beyond chance: 18/20 vs 0/20 on the sine,
+> 17/20 vs 0/20 on the rounded square, 1.0 m/s, 200 ms link (first result, 2026-10-07: 11/20 and 7/20). All in sim. This is the moving
 > baseline later changes are measured against, not the final D3 result.**
 >
 > | Gate | Result | Date |
@@ -24,13 +24,16 @@ notebook. The code and every result live in the code repository (see [Repositori
 > | H0 — hold over the pad by camera alone | ✅ 3/3 heights, hold p95 ≤ 2.8 cm | 09-15 |
 > | D1 — land on the static pad, 20 trials | ✅ **20/20**, touchdown error median 1.2 cm, max 2.7 cm (tolerance 10 cm) | 09-15 |
 > | D2 — chase baseline, land on the moving pad, 20 trials | ✅ **20/20 at 0.5 m/s**, median 2.1 cm, max 4.2 cm | 09-21 |
-> | D3 — chase vs coop | 🔄 **first scored cells: coop 11/20 vs chase 0/20 (sine), 7/20 vs 0/20 (rounded square), 20/20 vs 19/19 (line control)** at 1.0 m/s | 10-08 |
+> | D3 — chase vs coop | 🔄 **coop 18/20 vs chase 0/20 (sine, p 0.0000076), 17/20 vs 0/20 (rounded square, p 0.000015), 20/20 vs 20/20 (line control)** at 1.0 m/s; first cells 10-08 were 11/20, 7/20 | 10-30 |
 >
 > **D3 baseline, all three paths** (runs `20261007_135910` and `20261008_142024`, 20 chase/coop pairs per cell from the same seeded starts,
 > fresh seed never used for tuning, 200 ms noiseless link, 1.0 m/s):
 >
 > | Path | Chase docked | Coop docked | Paired: coop-only / chase-only | Exact McNemar p |
 > |---|---|---|---|---|
+> | **2026-10-30 baseline** (`20261029_211440_paired`), sine | 0/20 (0–16%) | **18/20** (70–97%) | 18 / 0 | **0.0000076** |
+> | **2026-10-30**, rounded square | 0/20 (0–16%) | **17/20** (64–95%) | 17 / 0 | **0.000015** |
+> | **2026-10-30**, line | 20/20 (84–100%) | **20/20** (84–100%) | 0 / 0 | 1 |
 > | sine (always turning, smoothly) | 0/20 (95% CI 0–16%) | **11/20** (34–74%) | 11 / 0 | **0.001** |
 > | rounded square (a sudden corner every 5.6 s) | 0/20 (0–16%) | **7/20** (18–57%) | 7 / 0 | **0.016** |
 > | line (control: no turns) | 19/19 valid (83–100%) | **20/20** (84–100%) | 0 / 0 | — (no discordant pairs) |
@@ -105,7 +108,7 @@ results, so a hardware delay cannot block it.
 | **D0** | Tag relative pose in sim, checked against truth | Week 1 | ✅ **flown 2026-09-14, PASS** at 1280×960, 0–2.5 m |
 | **D1** | Repeatable stationary-pad landing in sim | Week 2 | ✅ **flown 2026-09-15, 20/20** |
 | **D2** | UAV-only chase landing on a moving pad — the baseline | Weeks 3–4 | ✅ **flown 2026-09-21, 20/20 at 0.5 m/s**; characterised to 1.5 m/s and on 3 path shapes, 09-22 |
-| **D3** | Cooperative vs. chase, 20-trial matrix → **the Fall result** (December) | Weeks 5–6 | 🔄 **~60%**: everything built and checked; **first scored cells at 1.0 m/s: coop 11/20 vs chase 0/20 (sine, p 0.001), 7/20 vs 0/20 (rounded square, p 0.016)**. Line control: both arms dock (chase 19/19, coop 20/20). Still to fly: 1.5 m/s, latency sweep, chase fairness arm |
+| **D3** | Cooperative vs. chase, 20-trial matrix → **the Fall result** (December) | Weeks 5–6 | 🔄 everything built and checked; **2026-10-30 baseline at 1.0 m/s: coop 18/20 vs chase 0/20 (sine, p 0.0000076), 17/20 vs 0/20 (rounded square, p 0.000015)**; first cells 10-07 were 11/20 and 7/20. Line control: both arms dock (chase 19/19, coop 20/20). Still to fly: 1.5 m/s, latency sweep, chase fairness arm |
 | **D4** | Hardware: airframe flies repeatably; UGV holds a repeatable speed | Jan–Feb | 0% |
 | **D5** | Physical docking reproduces the sim numbers (the hardware result; the airframe also serves C-UASC) | Mar–Apr | 0% |
 | *stretch* | GPS-denied approach phase — the Blue Skies version, needs Gate A | — | — |
@@ -180,6 +183,7 @@ to join one: [ROLES.md](./ROLES.md).
 
 | Date | Track | What happened |
 |---|---|---|
+| 2026-10-30 | docking | **New paired D3 baseline at 1.0 m/s, 200 ms, seed 2: sine coop 18/20 vs chase 0/20 (McNemar p 0.0000076); rounded square coop 17/20 vs 0/20 (p 0.000015); line 20/20 both.** Every cell passes. After the 0.25 m hold before the final drop, the 0.25 m deck (the real UGV's height), and the climb-back fixes. Coop's 4 misses (10.4-11.5 cm) landed in a turn that began during the 1.2 s drop; 1 square flight aborted after 3 corner climb-backs. Chase never touched a turning pad. Next: the UGV announcing turns ahead (preview). |
 | 2026-10-08 | docking | **Line control and the skid diagnosis.** The line, flown to the baseline's standard (20 pairs, seed 2), docks chase 19/19 valid and coop 20/20: without turns, sharing adds nothing, as predicted. The baseline's "off the deck" failures were diagnosed from its records: five skidded 3-10 cm in the ~0.35 s between contact and disarm as the pad turned, and ended a centimetre over the deck edge; one was a touchdown detected 2.5 s late. The planning repo became the team's shared starting point (status and plan, key references). |
 | 2026-10-07 | docking | **First scored D3 cells, now the moving baseline.** 20 chase/coop pairs per cell at 1.0 m/s, 200 ms, on a fresh seed: **sine coop 11/20 vs chase 0/20 (McNemar p 0.001); rounded square coop 7/20 vs 0/20 (p 0.016)**; both cells valid (80/80 flights). Chase never docked when coop failed. Coop's largest failure: landing within tolerance, then skidding off-centre before disarm (diagnosed 10-08). The runner gained checkpoints and `--resume`, tested by killing a run mid-flight. |
 | 2026-10-07 | docking | **Timed final drop: the rounded square docks at 200 ms.** With PX4's descent cap lifted (line 12/12, final 0.5 m 2.2 → 1.5 s) a faster final drop alone did not help the sine (coop 2/6). Timing it to the pad's turning did: v2 (start when the turn is gentle or easing, offset < 8 cm, drone at the hold height; never pause) gave coop **3/6 on the rounded square** (every earlier 200 ms run 0/6) and **3/6 on the sine** with misses 11-15 cm; chase 0/6 on both; line 6/6 both. v1 had stalled mid-drop (0/6). One good square landing then came off the pad (not diagnosed for that run; a similar baseline case was a late disarm). Code PR merged to `main`. |

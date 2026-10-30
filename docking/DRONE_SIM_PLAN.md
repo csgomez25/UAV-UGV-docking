@@ -17,15 +17,15 @@ Whether 1.5 m/s can be reached on sharp corners is a research question. If it ca
 
 ## Where it stands
 
-First scored test, 1.0 m/s, 20 paired landings per path:
+Scored tests, 1.0 m/s, 20 paired landings per path (in simulation):
 
-| Path | Camera-only | Cooperative |
-|---|---|---|
-| Straight line | 19 of 19 | 20 of 20 |
-| Constant turning (sine) | 0 of 20 | 11 of 20 |
-| Sharp corners (rounded square) | 0 of 20 | 7 of 20 |
+| Path | Camera-only, Oct 7/8 | Cooperative, Oct 7/8 | Camera-only, **Oct 30** | Cooperative, **Oct 30** |
+|---|---|---|---|---|
+| Straight line | 19 of 19 | 20 of 20 | 20 of 20 | **20 of 20** |
+| Constant turning (sine) | 0 of 20 | 11 of 20 | 0 of 20 | **18 of 20** (p 0.0000076) |
+| Sharp corners (rounded square) | 0 of 20 | 7 of 20 | 0 of 20 | **17 of 20** (p 0.000015) |
 
-Cooperation clearly helps on turns, but it is not yet at 75%. The largest single cause of failed cooperative landings is the drone touching down on target and then sliding as the pad turns under it, before the motors stop.
+Since October 30 cooperation is above 75% on both turning paths (90% and 85%). The October 7/8 notes follow. The largest single cause of failed cooperative landings is the drone touching down on target and then sliding as the pad turns under it, before the motors stop.
 
 ## How a landing is judged
 
