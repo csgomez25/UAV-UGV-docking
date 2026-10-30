@@ -85,6 +85,25 @@ Every gate through D2 has passed, and D3 has its first scored cells. All results
 
 In 40 pairs on turning paths, chase never docked when coop failed. On the line, where the camera alone is enough, both dock every time, so coop's advantage appears exactly where the hypothesis says it should: in turns. Coop touched down on all 20 sine trials (median 8.2 cm from centre) and on 15 square trials (median 5.9 cm).
 
+**Coop baseline, October 29** (run 20261029_211440, coop only, 20 trials per path, same speed, link and start positions; after the lower 0.25 m wait before the final drop, the 0.25 m deck, and the climb-back fixes). Chase was not flown this time, so there is no paired comparison yet.
+
+| Path | Coop docked | Median / largest miss from centre | Was (October 7/8) |
+|---|---|---|---|
+| Line | **20/20** (95% CI 84–100%) | 1.2 / 3.7 cm | 20/20 |
+| Sine | **17/19** (69–97%) | 3.8 / 11.0 cm | 11/20 |
+| Rounded square | **17/20** (64–95%) | 5.4 / 11.5 cm | 7/20 |
+
+| Flight | What happened | Where it touched (behind, outside the turn) | Final position after disarm |
+|---|---|---|---|
+| Sine 07 | Simulator fault before takeoff; not counted | — | — |
+| Sine 10 | Drop began as a turn started; landed at the turn's peak | 4.3 cm behind, 9.5 cm outside: 10.4 cm | 11 cm outside, on the deck |
+| Sine 15 | Same, the other way | 2.2 cm behind, 10.8 cm outside: 11.0 cm | 12.5 cm outside, on the deck |
+| Square 06 | Drop began 0.7 s before a corner; landed in it (after 2 climb-backs) | 7.4 cm behind, 8.6 cm outside: 11.4 cm | 18 cm off, on the deck |
+| Square 12 | Same, first try | 6.3 cm behind, 9.6 cm outside: 11.5 cm | 17.5 cm off, on the deck |
+| Square 05 | Pushed more than 20 cm off in 3 corners in a row (0.72 m, mid-drop at 0.14 m, 0.69 m); out of tries, so it aborted | never touched | hovering 2.1 m above the pad, following it, 11 cm off centre |
+
+No drone left the deck. The estimate of where the pad is stays good; the misses are the pad turning during the last ~1.2 s fall. The next step is to let the robot announce its upcoming turns so the drone does not start the drop into a corner.
+
 One line trial (chase, trial 01) is excluded twice over: from its start position, a rotor brushes the stationary pad during takeoff, which the scorer correctly treats as an invalid trial. A scorer rule for contacts before the pad moves is proposed, not yet adopted.
 
 ## What we learned building it
