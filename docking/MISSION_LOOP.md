@@ -22,13 +22,15 @@ The whole sortie has a 10-minute limit, standing in for the battery. The markers
 
 **Two mission modes.** GPS mode (above) comes first. GPS-denied mode, after February 22, has the UGV park as a base; the drone inspects only the face of PS1 near it, returns by its own odometry, then UWB, then the tags, and lands on the parked UGV.
 
-## Draft route, for the team to check on campus
+## The UGV loop (agreed November 2, 2026)
 
-![Draft mission loop around PS1](./img/mission_loop_draft.png)
+![The UGV loop around PS1](./img/mission_loop_draft.png)
 
-Second draft, drawn from OpenStreetMap around Building 106 (the structure Google Maps calls "Magnolia Ln Parking") and Building 109 at its north-east end. Not checked on campus. The UGV loop (red, 678 m, about 11 minutes at 1.0 m/s) runs along Red Gum Lane, Oak Lane and Magnolia Lane. The launch point is on Red Gum Lane; the safe landing zone is Voorhis Park, across the road.
+Drawn by hand over OpenStreetMap, on the sidewalks next to Building 106 (the structure Google Maps calls "Magnolia Ln Parking") and Building 109 at its east corner. It runs down Red Gum Lane, along the building side of Oak Lane, round the north tip by Cypress Lane, and back along Magnolia Lane: **647 m, about 11 minutes per lap at 1.0 m/s.** A sortie takes about 5 minutes, so the UGV covers about half the loop and never has to finish it. The launch point is the Red Gum and Magnolia corner; the safe landing zone is Voorhis Park, across the road.
 
-**PS1's size:** 12,103 m² footprint (about 782,000 sq ft over six decks) and 21.8 m to its highest point, from LA County data in OSM. The deck heights (about 3.4 m apart, roof deck about 17 m) are estimates until measured. **To check on campus:** whether the roads can be used with campus traffic, and whether Voorhis Park works as the safe landing zone.
+**PS1's size:** 12,103 m² footprint (about 782,000 sq ft over six decks) and 21.8 m to its highest point, from LA County data in OSM. The deck heights (about 3.4 m apart, roof deck about 17 m) are estimates until measured.
+
+**Before any real test on this loop:** walk it for kerbs, ramps and people; use the stretches of Oak and Magnolia closed to cars by the yellow posts first; stay off live road lanes without a closure; check that Voorhis Park is acceptable for an aborted landing; and measure the trees along the drone's survey lap.
 
 ## Competitions
 
