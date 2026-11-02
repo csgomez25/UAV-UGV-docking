@@ -8,7 +8,7 @@ D3, the scored docking comparison, is the senior project and stays as it is. Thi
 
 ## The sortie
 
-Five phases, in order, none skipped. A failed phase ends the sortie: the drone climbs above PS1, flies to the safe landing zone in Voorhis Alumni Park and lands.
+Five phases, in order, none skipped. A failed phase ends the sortie: the drone climbs to 30 m (above PS1's 22 m towers), flies to the safe landing zone in Voorhis Park and lands.
 
 | Phase | What happens | Passes when (starting proposals) |
 |---|---|---|
@@ -26,7 +26,9 @@ The whole sortie has a 10-minute limit, standing in for the battery. The markers
 
 ![Draft mission loop around PS1](./img/mission_loop_draft.png)
 
-Drawn from OpenStreetMap, not checked on campus. The UGV loop (red, 606 m, about 10 minutes at 1.0 m/s) runs along Red Gum Lane, University Drive and Magnolia Lane; its east side crosses ground where the map shows only service roads. **To check on campus:** whether that east side is drivable, whether the roads can be used at all with campus traffic, and whether Voorhis Alumni Park works as the safe landing zone. PS1's heights (6 decks, about 3 m apart, roof about 15 m) are estimates until someone measures them.
+Second draft, drawn from OpenStreetMap around Building 106 (the structure Google Maps calls "Magnolia Ln Parking") and Building 109 at its north-east end. Not checked on campus. The UGV loop (red, 678 m, about 11 minutes at 1.0 m/s) runs along Red Gum Lane, Oak Lane and Magnolia Lane. The launch point is on Red Gum Lane; the safe landing zone is Voorhis Park, across the road.
+
+**PS1's size:** 12,103 m² footprint (about 782,000 sq ft over six decks) and 21.8 m to its highest point, from LA County data in OSM. The deck heights (about 3.4 m apart, roof deck about 17 m) are estimates until measured. **To check on campus:** whether the roads can be used with campus traffic, and whether Voorhis Park works as the safe landing zone.
 
 ## Competitions
 
