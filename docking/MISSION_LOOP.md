@@ -35,7 +35,12 @@ Drawn by hand over OpenStreetMap, on the sidewalks next to Building 106 (the str
 ## Competitions
 
 - **Blue Skies 2027 ("InfraAir")** is the main one. A filmed campus sortie would support the proposal and video, due **Feb 22, 2027**. Its rules forbid generative AI in the submission.
-- **NASA ORBIT 2027, Earth track**, at the professor's request, as a business plan: an inspection service with a docking UGV, built on F Prime (NASA software catalog NPO-49404-1) as the flight software. No prototype is required. Registration closes **Nov 16**; the Phase 1 paper (5 pages or less) is due **Dec 14**. ORBIT allows AI but requires disclosure; the team writes both entries. **To confirm with the professor before Nov 16:** that Cal Poly Pomona is on the FY 2026 eligibility list, and that the same students and idea may enter both competitions.
+- **NASA ORBIT 2027, Earth track**, at the professor's request, as a business plan: an inspection service with a docking UGV, built on F Prime (NASA software catalog NPO-49404-1) as the flight software. No prototype is required. Registration closes **Nov 16**; the Phase 1 paper (5 pages or less) is due **Dec 14**. ORBIT allows AI but requires disclosure; the team writes both entries. **Decided November 2, 2026:** the same students enter both, with the same core technology (docking on a moving ground vehicle using its broadcast, F Prime on the drone) and a slightly different idea for each. Blue Skies is infrastructure inspection. ORBIT targets a different market, chosen from:
+  1. **Mobile security patrol** (recommended): a patrol vehicle's drone sweeps a campus, port or solar farm for incidents and re-docks without stopping. It reuses the PS1 campus loop unchanged.
+  2. **Crop scouting** from a working tractor or farm robot. It needs a farm world.
+  3. **Delivery from a moving van.** It carries heavier FAA rules.
+
+  An optional second NASA technology is DAIDALUS, NASA Langley's detect-and-avoid software (catalog LAR-18464-1, LAR-19282-1). The team writes both plans. **Still to confirm before Nov 16:** that Cal Poly Pomona is on the FY 2026 eligibility list.
 
 ## Schedule
 
