@@ -25,7 +25,7 @@ These numbers come from the simulation, so the scored comparison can transfer.
         DRONE                                                  UGV
 ┌───────────────────────────┐   UGV ↔ drone radio   ┌───────────────────────────────┐
 │ Companion computer        │◄─────────────────────►│ Raspberry Pi 5 (ROS 2 Jazzy)  │
-│ (Pi 5 or Jetson Orin Nano)│   915 MHz, 20 Hz      │  ugv_broadcaster, path        │
+│ (Raspberry Pi 5)          │   915 MHz, 20 Hz      │  ugv_broadcaster, path        │
 │  tag camera, pad filter,  │   speed/heading/turn  │  follower, logging            │
 │  docking_controller       │                       │  IMU · GPS · (UWB later)      │
 └────────────┬──────────────┘                       └──────────────┬────────────────┘
@@ -66,7 +66,7 @@ These numbers come from the simulation, so the scored comparison can transfer.
 | UGV ↔ drone radios | RFD900x pair, or Holybro SiK v3 pair to start | To order | $50-300 |
 | Power | 4S LiPo (or the existing pack), 5 V 5 A buck for the Pi, fuse, physical kill switch, wireless e-stop relay | To order | $60-100 |
 | Deck | 0.6 × 0.6 m light rigid sheet (polycarbonate or aluminium composite), matte AprilTag print | To make | $30-50 |
-| **Drone companion computer** | Pi 5 or Jetson Orin Nano, plus a down-facing camera | **Decision needed** (section 6) | $100-500 |
+| **Drone companion computer** | **Raspberry Pi 5, 8 GB**, the same as the UGV, with a down-facing camera for the tags and a forward camera for the mission loop's inspection (both on the Pi 5's two camera ports), and a 5 V 5 A supply of its own | **Decided November 2, 2026**; to order | $100 + cameras $25-60 each |
 | UWB (later, mission loop only) | DWM1001 dev boards, one per vehicle | Later | about $30 each |
 
 Prices are rough and must be checked when ordering. The essentials for the UGV come to about **$250-350**.
@@ -103,7 +103,7 @@ Each stage ends in a measured pass, like the simulation's gates. Don't start the
 
 ## 6. Open decisions
 
-1. **The drone's companion computer.** A Pixhawk 6 alone cannot run the tag camera, the pad filter and the docking controller. The drone needs a companion computer connected to the Pixhawk's TELEM2 port. Choose a **Pi 5** (enough for the AprilTag and estimator code, cheaper, the same as the UGV) or a **Jetson Orin Nano** (more headroom for vision). Also confirm which Pixhawk 6 it is (6C or 6X).
+1. ~~**The drone's companion computer.**~~ **Decided November 2, 2026: a Raspberry Pi 5 on both the drone and the UGV.** One board means one OS image (Ubuntu 24.04 with ROS 2 Jazzy), one set of spares, and the same bridge code on both ends of the radio link. On the drone it connects to the Pixhawk's TELEM2 port (uXRCE-DDS over serial) and runs the tag camera, the pad filter and the docking controller. **Check early:** that the Pi 5 keeps up with AprilTag detection at the camera's rate while the controller runs (a bench test with the recorded D3 settings), and that it stays cool in its case on a hot day. Still open: which Pixhawk 6 it is (6C or 6X).
 2. **The radio pair.** SiK v3 (cheap, fine for the bench and short range) or RFD900x (more range and margin for the mountain tests).
 3. **Budget and who orders.**
 4. **Field rules.** Permission to fly at each site (school and land owner), FAA rules for the flights, and AMA membership if the team enters C-UASC.
